@@ -1,0 +1,86 @@
+﻿@page 
+@model SkincareProductSalesSystem.Pages.Manager.Accounts.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<form method="get">
+    <label for="roleFilter">Filter by Role:</label>
+    <select name="RoleFilter" id="roleFilter" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="1" selected="@(Model.RoleFilter == 1)">Staff</option>
+        <option value="2" selected="@(Model.RoleFilter == 2)">Customer</option>
+    </select>
+</form>
+
+<table class="table">
+    <thead>
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Email)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().PasswordHash)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Address)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Birthdate)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().LoyaltyPoints)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().CreatedAt)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().UpdatedAt)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Role)</th>
+            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().SkinType)</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    </thead>
+    <tbody>
+@foreach (var item in Model.User) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PasswordHash)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Birthdate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoyaltyPoints)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role.RoleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkinType.Name)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

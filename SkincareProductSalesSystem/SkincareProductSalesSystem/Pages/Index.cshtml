@@ -1,10 +1,225 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Skinalyze</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .hero-section {
+            position: relative;
+            background: url('https://static.vecteezy.com/system/resources/thumbnails/040/246/659/small_2x/ai-generated-mockup-of-plastic-packaging-and-bottles-with-natural-organic-cosmetics-on-the-bathroom-light-background-photo.jpg') no-repeat center center;
+            background-size: cover; 
+            color: white; /* Giữ chữ dễ đọc */
+            text-align: center;
+            padding: 100px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px; /* Đảm bảo phần này có đủ chiều cao */
+        }
+
+            .hero-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7); /* Lớp phủ đen 50% */
+                z-index: 1;
+            }
+
+            .hero-section > div {
+                position: relative;
+                z-index: 2;
+            }
+            .hero-section h1 {
+                font-size: 2.5rem;
+                font-weight: bold;
+            }
+
+            .hero-section p {
+                font-size: 1.2rem;
+                max-width: 600px;
+            }
+
+            .hero-section .btn {
+                background-color: #ffffff;
+                color: #4a5548;
+                font-weight: bold;
+                border-radius: 30px;
+                padding: 10px 20px;
+            }
+
+                .hero-section .btn:hover {
+                    background-color: #4a5548;
+                    color: white;
+                }
+
+
+        .section-title {
+            color: #4a5548;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-custom {
+            background-color: #4a5548;
+            color: white;
+            border: none;
+        }
+
+            .btn-custom:hover {
+                background-color: #505a4d;
+            }
+
+        .footer {
+            background-color: #4a5548;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+            .footer a {
+                color: #d3d3d3;
+                text-decoration: none;
+            }
+
+                .footer a:hover {
+                    color: white;
+                }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div>
+            <h1>Scientific Skincare with Skinalyze</h1>
+            <p>Discover the right products for your skin through our smart quiz.</p>
+            <a href="/Quiz" class="btn btn-light btn-lg mt-3">Start Now</a>
+        </div>
+    </section>
+
+    <div class=" container mt-4">
+        <!-- About Us -->
+        <section class="about-section mt-5 bg-white">
+            <div class="container py-5">
+                <div class="row align-items-center">
+                    <!-- Image on the Left -->
+                    <div class="col-md-5">
+                        <img style="width:560px; height:400px"
+                             src="https://i.pinimg.com/736x/9b/96/54/9b96543ff31fcf728867e5b4736153bd.jpg"
+                             alt="About Skinalyze" class="img-fluid rounded">
+                    </div>
+                    <!-- Text on the Right -->
+                    <div class="col-md-7">
+                        <h2 class="section-title">About Us</h2>
+                        <p style="padding:0 3rem; text-align: justify;">
+                            Skinalyze is a cutting-edge platform dedicated to revolutionizing skincare.
+                            Our mission is to help users discover the most effective skincare routine through AI-driven analysis.
+                            By leveraging advanced technology, we assess your unique skin type, recommend scientifically
+                            backed products, and connect you with a vibrant beauty community for shared insights.
+                        </p>
+                        <p style="padding:0 3rem; text-align: justify;">
+                            Whether you're dealing with acne, dryness, sensitivity, or looking for anti-aging solutions,
+                            Skinalyze provides personalized recommendations tailored to your skin's needs.
+                            Our goal is to make skincare simple, effective, and backed by science...
+                        </p>
+                        <a href="/about" class=" mt-3" style="margin-left:3rem;  color: #4a5548; ">Read More  </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Beauty Blog -->
+        <section style="margin-top:70px">
+            <h2 class="section-title text-center">Beauty Blog</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card shadow-lg">
+                        <img src="https://i.pinimg.com/736x/d0/23/78/d02378d223302d7980dd4e123d840708.jpg" class="card-img-top" alt="Winter Skincare Tips">
+                        <div class="card-body">
+                            <h5 class="card-title">Winter Skincare Tips</h5>
+                            <p class="card-text">Protect your skin from dryness and cracks during the cold season with these expert tips.</p>
+                            <a href="" class="btn btn-dark">Read Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-lg">
+                        <img src="https://i.pinimg.com/736x/3a/cc/22/3acc227dc738a99d091d8d7e00aa4b49.jpg" class="card-img-top" alt="Acne Treatment">
+                        <div class="card-body">
+                            <h5 class="card-title">Effective Acne Treatment: Mistakes to Avoid</h5>
+                            <p class="card-text">Avoid common mistakes in acne treatment that can make your skin condition worse.</p>
+                            <a href="#" class="btn btn-dark">Read Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-lg">
+                        <img src="https://i.pinimg.com/736x/3b/ea/81/3bea817b61ca996cdbd863be88c74200.jpg" class="card-img-top" alt="Sunscreen Guide">
+                        <div class="card-body">
+                            <h5 class="card-title">Sunscreen: How to Choose the Right One?</h5>
+                            <p class="card-text">SPF 30 or 50? Cream or spray? Get the answers to all your sunscreen questions.</p>
+                            <a href="#" class="btn btn-dark">Read Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+      
+
+        <!-- Frequently Asked Questions (FAQ) -->
+        <section style="margin-top:100px">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            How can I determine my skin type?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            You can take the free Skinalyze skin analysis quiz to determine your skin type accurately.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            Are Skinalyze products suitable for sensitive skin?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We offer many products specifically for sensitive skin, free from fragrances and alcohol.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+   
+</body>
+
+</html>
