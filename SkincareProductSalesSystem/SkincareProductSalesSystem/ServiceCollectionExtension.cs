@@ -24,6 +24,8 @@ namespace FUNewsManagementSystem
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
 
         }
@@ -40,6 +42,19 @@ namespace FUNewsManagementSystem
             {
                 options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"));
                 options.AddPolicy("StaffOnly", policy => policy.RequireRole("Staff"));
+            });
+
+            // Session để lưu cart
+            services.AddDistributedMemoryCache(); // Bộ nhớ session
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(24); // Thời gian tồn tại của session
+                options.Cookie.HttpOnly = true; // Chỉ truy cập qua HTTP
+                options.Cookie.IsEssential = true; // Quan trọng với hệ thống
+            });
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
 
         }

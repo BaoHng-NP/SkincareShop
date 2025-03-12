@@ -1,6 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@* @using BusinessObjects.Models *@
+@* @using SkincareProductSalesSystem.Helpers *@
+@* @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor *@
+@* @{ *@
+@*     var cart = HttpContextAccessor.HttpContext?.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>(); *@
+@*     var cartCount = cart.Sum(i => i.Quantity ?? 0); // Đảm bảo không bị null *@
+@* } *@
+
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
+ 
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -142,11 +155,12 @@
                         {
                             <!-- Icon Giỏ Hàng -->
                             <li class="nav-item">
-                                <a class="nav-link position-relative" asp-page="/Cart">
+                                <a class="nav-link position-relative" asp-page="/Customer/Cart">
                                     <i class="bi bi-cart3 fs-4"></i>
-                                    @* <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> *@
-                                    @*     3 <!-- Dữ liệu số lượng sản phẩm có thể động --> *@
+                                    @* <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> *@
+                                    @*     @cartCount *@
                                     @* </span> *@
+
                                 </a>
                             </li>
 

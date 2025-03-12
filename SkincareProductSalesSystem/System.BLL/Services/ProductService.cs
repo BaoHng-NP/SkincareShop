@@ -56,5 +56,23 @@ namespace System.BLL.Services
             _repository.Update(product);
             await _unitOfWork.SaveChange();
         }
+        public async Task<IEnumerable<Product>> GetProductsByFilterAsync(int? categoryId, int? brandId)
+        {
+            var query = _repository.FindAll(); 
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            if (brandId.HasValue)
+            {
+                query = query.Where(p => p.BrandId == brandId.Value);
+            }
+
+            return await query.OrderBy(p => p.Name).ToListAsync(); // Gọi ToListAsync() chỉ 1 lần
+        }
+
+
     }
 }

@@ -1,0 +1,236 @@
+﻿@page "/detail"
+@model SkincareProductSalesSystem.Pages.Customer.ProductDetailModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Product Detail";
+}
+<style>
+    .breadcrumb {
+        background-color: transparent;
+        font-size: 16px;
+    }
+
+    .breadcrumb-item a {
+        color: #3f483d !important;
+        text-decoration: none;
+    }
+
+        .breadcrumb-item a:hover {
+            color: #2d362a !important;
+            text-decoration: underline;
+        }
+
+    .breadcrumb-item.active {
+        color: #3f483d !important;
+        font-weight: bold;
+    }
+
+    .product-image {
+        width: 600px; /* Đảm bảo ảnh co giãn theo khung */
+        height: 600px; /* Giữ tỷ lệ khung hình */
+        display: block;
+        margin: 0 auto;
+        border-radius: 10px;
+    }
+
+    .toast-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #00AC46;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+    }
+</style>
+<div class="container-fluid mt-3" style="padding: 0 100px">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/store">Store</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row mt-5">
+        <div class="col-md-6 text-center">
+            <div class="shadow-sm p-3 mb-4 bg-white rounded">
+                <img src="@Model.Product.ImageUrl" class="img-fluid product-image" alt="@Model.Product.Name">
+            </div>
+            <div class="shadow-sm p-2 bg-white rounded" style="width: 150px; height: 150px; position: relative;">
+                <img src="@Model.Product.ImageUrl" class="img-fluid" alt="@Model.Product.Name">
+                <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4);"></div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h2>@Model.Product.Name</h2>
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-share"></i>
+                <span>Share:</span>
+                <i class="bi bi-facebook text-primary"></i>
+                <i class="bi bi-twitter text-info"></i>
+                <i class="bi bi-github"></i>
+            </div>
+
+            <div class="d-flex align-items-center mt-2">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= Model.Product.Rating)
+                    {
+                        <span class="text-warning">&#9733;</span> @* Ngôi sao đầy (⭐) *@
+                    }
+                    else
+                    {
+                        <span class="text-secondary">&#9734;</span> @* Ngôi sao rỗng (☆) *@
+                    }
+                }
+                <span class="text-muted ms-2">(@Model.Product.Rating)</span> @* Hiển thị số điểm rating *@
+            </div>
+
+            <div class="d-flex mt-2">
+                <h4 class="text-muted text-decoration-line-through me-3">
+                    @(Model.Product.Price * 2)
+                </h4>
+                <h4 class="text-danger fw-bold">@Model.Product.Price</h4>
+            </div>
+
+            <p class="text-muted">@Model.Product.Description</p>
+            <hr>
+
+
+
+
+
+            <h5 class="mt-3">Quantity</h5>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-light border" onclick="decreaseQuantity()">-</button>
+                <span class="mx-3" id="quantityInput">1</span>
+                <button class="btn btn-light border" onclick="increaseQuantity()">+</button>
+            </div>
+
+
+
+            <button class="btn btn-dark mt-3"
+                    data-id="@Model.Product.Id"
+                    data-name="@Model.Product.Name"
+                    data-price="@Model.Product.Price"
+                    data-image="@Model.Product.ImageUrl"
+                    onclick="handleAddToCart(this)">
+                <i class="bi bi-cart-plus"></i> Add to Cart
+            </button>
+            <hr>
+
+            <!-- Policies -->
+            <h5>Our Policies</h5>
+            <div class="mt-2">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-truck text-warning fs-3"></i>
+                    <div class="ms-3">
+                        <p class="mb-0 fw-bold">Delivery policy</p>
+                        <p class="text-muted">We ensure secure and timely delivery of your product.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-lock text-warning fs-3"></i>
+                    <div class="ms-3">
+                        <p class="mb-0 fw-bold">Security policy</p>
+                        <p class="text-muted">We maintain the highest security standards for your transactions.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-hourglass text-warning fs-3"></i>
+                    <div class="ms-3">
+                        <p class="mb-0 fw-bold">Return policy</p>
+                        <p class="text-muted">Issues with material quality will be addressed promptly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        let quantity = 1; // Biến lưu số lượng
+
+    function increaseQuantity() {
+        quantity++;
+        document.getElementById("quantityInput").innerText = quantity;
+    }
+
+    function decreaseQuantity() {
+        if (quantity > 1) {
+            quantity--;
+            document.getElementById("quantityInput").innerText = quantity;
+        }
+    }
+        function handleAddToCart(button) {
+        const productId = button.getAttribute("data-id");
+        const productName = button.getAttribute("data-name");
+        const price = button.getAttribute("data-price");
+        const imageUrl = button.getAttribute("data-image");
+
+        addToCart(productId, productName, price, imageUrl, quantity);
+    }
+
+               function addToCart(productId, productName, price, imageUrl, quantity) {
+        const product = {
+            productId: parseInt(productId),
+            productName: productName,
+            price: parseFloat(price),
+            imageUrl: imageUrl,
+            quantity: quantity
+        };
+
+        fetch("/store?handler=AddToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(product)
+        })
+        .then(async response => {
+            const text = await response.text();
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return JSON.parse(text);
+            } else {
+                throw new Error("Expected JSON response, but got HTML or other content");
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                // Hiển thị thông báo thành công
+                showToast(`🛒 Added to cart! Cart items: ${data.cartCount}`);
+            } else {
+                alert("❌ Failed to add to cart: " + data.message);
+            }
+        })
+        .catch(error => console.error("❌ Fetch error:", error));
+    }
+
+    // Hàm hiển thị thông báo dạng toast
+    function showToast(message) {
+        let toast = document.createElement("div");
+        toast.className = "toast-message";
+        toast.innerText = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => document.body.removeChild(toast), 500);
+        }, 3000);
+    }
+
+</script>

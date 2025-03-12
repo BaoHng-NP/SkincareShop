@@ -4,11 +4,9 @@
 @{
     ViewData["Title"] = "Store";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
         .categories-box {
@@ -23,7 +21,7 @@
 
             .categories-box h5 {
                 font-weight: 600;
-                color: #ff8d04;
+                color: #4a5548;
                 margin-bottom: 15px;
             }
 
@@ -33,10 +31,11 @@
             color: black;
             font-size: 17px;
             transition: color 0.3s ease;
+            padding-bottom: 5px;
         }
 
             .category-link:hover {
-                color: orange;
+                color: #616e5e;
             }
 
         .product-card {
@@ -64,16 +63,16 @@
         .product-name {
             font-size: 18px;
             font-weight: 600;
-            color: black;
+            color: #171c17;
             text-decoration: none;
         }
 
             .product-name:hover {
-                color: orange;
+                color: #616e5e;
             }
 
         .add-to-cart-btn {
-            background-color: black;
+            background-color: #4a5548;
             color: white;
             border: none;
             position: absolute;
@@ -88,96 +87,257 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        .breadcrumb {
+            background-color: transparent;
+            font-size: 16px;
+        }
+
+        .breadcrumb-item a {
+            color: #3f483d !important;
+            text-decoration: none;
+        }
+
+            .breadcrumb-item a:hover {
+                color: #2d362a !important;
+                text-decoration: underline;
+            }
+
+        .breadcrumb-item.active {
+            color: #3f483d !important;
+            font-weight: bold;
+        }
+
+    .toast-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #00AC46;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+    }
+
     </style>
-</head>
-<body>
 
-<div class="container-fluid mt-5" style="padding:0 50px">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Store</li>
-        </ol>
-    </nav>
 
-    <div class="row">
-        <!-- Categories & Filters -->
-        <div class="col-md-3">
-            <div class="categories-box">
-                <h5>Categories</h5>
-                @* @foreach (var category in Model.Categories) *@
-                @* { *@
-                @*     <div> *@
-                @*         <span class="category-link" onclick="navigateToCategory('@category.Id')"> *@
-                @*             • @category.Name *@
-                @*         </span> *@
-                @*     </div> *@
-                @* } *@
-                <hr>
 
-                <h5>Search</h5>
-                <input type="text" id="searchBox" class="form-control mb-3" placeholder="Search by product name">
 
-                <hr>
+    <div class="container-fluid mt-3" style="padding:0 50px">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/index">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Store</li>
+            </ol>
+        </nav>
+        <div class="row mt-4">
+            <!-- Categories & Filters -->
+            <div class="col-md-3">
+                <div class="categories-box">
+                    <h5>Category</h5>
+                    @if (Model.Category != null)
+                    {
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">All</option>
+                            @foreach (var category in Model.Category)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <p>No categories available.</p>
+                    }
 
-                <h5>Price</h5>
-                <input type="range" class="form-range" min="0" max="1000" id="priceRange">
-                <p>Price Range: <span id="priceLabel">$0 - $1000</span></p>
+                    <hr>
 
-                <hr>
-
-                <h5>Tags</h5>
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-light text-dark">Sport</span>
-                    <span class="badge bg-light text-dark">Football</span>
-                    <span class="badge bg-light text-dark">Basketball</span>
-                    <span class="badge bg-light text-dark">Gym</span>
-                    <span class="badge bg-light text-dark">Female</span>
+                    <h5>Brand</h5>
+                    @if (Model.Brand != null)
+                    {
+                        <select id="brandFilter" class="form-select">
+                            <option value="">All</option>
+                            @foreach (var brand in Model.Brand)
+                            {
+                                <option value="@brand.Id">@brand.BrandName</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <p>No brands available.</p>
+                    }
+                    <hr>
+                    <button class="btn btn-dark" onclick="applyFilter()">Apply Filter</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Product List -->
-        <div class="col-md-9">
-            <div class="row">
-                @foreach (var product in Model.Product)
+            <!-- Product List -->
+            <div class="col-md-9">
+                @if (ViewData["NoProductsMessage"] != null)
                 {
-                    <div class="col-md-4 mb-4">
-                        <div class="product-card">
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">New</span>
-                            <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid">
-                            <h5>
-                                <a href="/detail?id=@product.Id" class="product-name">@product.Name</a>
-                            </h5>
-                            <p class="text-muted">@product.Description</p>
-                            <div class="d-flex justify-content-center align-items-center gap-2">
-                                <span class="text-decoration-line-through text-muted">$@((product.Price).ToString("0.00"))</span>
-                                <span class="text-danger fw-bold">$@product.Price</span>
-                            </div>
-                            <button class="btn add-to-cart-btn" onclick="addToCart('@product.Id')">
-                                <i class="bi bi-cart-plus"></i> Add to Cart
-                            </button>
-                        </div>
+                    <div class="alert alert-warning text-center">
+                        @ViewData["NoProductsMessage"]
                     </div>
                 }
+                else
+                {
+                    <div class="row">
+                        @if (Model.Product != null)
+                        {
+                            @foreach (var product in Model.Product)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="product-card">
+                                        <span class="badge bg-danger position-absolute top-0 start-0 m-2">New</span>
+                                        <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid">
+                                        <h5>
+                                            <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="product-name">@product.Name</a>
+                                        </h5>
+                                        <p class="text-muted">@product.Description</p>
+                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                            <span class="text-decoration-line-through text-muted">$@((product.Price * 2).ToString("0.00"))</span>
+                                            <span class="text-danger fw-bold">$@product.Price</span>
+                                        </div>
+                                    <button class="btn add-to-cart-btn"
+                                            data-id="@product.Id"
+                                            data-name="@product.Name"
+                                            data-price="@product.Price"
+                                            data-image="@product.ImageUrl"
+                                            onclick="handleAddToCart(this)">
+                                        <i class="bi bi-cart-plus"></i> Add to Cart
+                                    </button>
+
+
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No Product available.</p>
+                        }
+                        
+                    </div>
+                }
+                <nav>
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?pageNumber=@(Model.CurrentPage - 1)">Previous</a>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?pageNumber=@i">@i</a>
+                            </li>
+                        }
+
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?pageNumber=@(Model.CurrentPage + 1)">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
             </div>
+
         </div>
     </div>
-</div>
 
-</body>
-</html>
+
+
 <script>
-    function navigateToCategory(categoryId) {
-        window.location.href = '/category?categoryId=' + categoryId;
+        function handleAddToCart(button) {
+        const productId = button.getAttribute("data-id");
+        const productName = button.getAttribute("data-name");
+        const price = button.getAttribute("data-price");
+        const imageUrl = button.getAttribute("data-image");
+
+        addToCart(productId, productName, price, imageUrl);
     }
 
-    function addToCart(productId) {
-        alert("Added product " + productId + " to cart!");
+               function addToCart(productId, productName, price, imageUrl) {
+        const product = {
+            productId: parseInt(productId),
+            productName: productName,
+            price: parseFloat(price),
+            imageUrl: imageUrl,
+            quantity : 1
+        };
+
+        fetch("/store?handler=AddToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(product)
+        })
+        .then(async response => {
+            const text = await response.text();
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return JSON.parse(text);
+            } else {
+                throw new Error("Expected JSON response, but got HTML or other content");
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                // Hiển thị thông báo thành công
+                showToast(`🛒 Added to cart! Cart items: ${data.cartCount}`);
+            } else {
+                alert("❌ Failed to add to cart: " + data.message);
+            }
+        })
+        .catch(error => console.error("❌ Fetch error:", error));
     }
 
-    document.getElementById("priceRange").addEventListener("input", function() {
-        document.getElementById("priceLabel").textContent = "$0 - $" + this.value;
-    });
+    // Hàm hiển thị thông báo dạng toast
+    function showToast(message) {
+        let toast = document.createElement("div");
+        toast.className = "toast-message";
+        toast.innerText = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => document.body.removeChild(toast), 500);
+        }, 3000);
+    }
+
+</script>
+
+
+
+<script>
+    function applyFilter() {
+        var categoryId = document.getElementById("categoryFilter").value;
+        var brandId = document.getElementById("brandFilter").value;
+
+        var url = "/store?";
+        if (categoryId) {
+            url += "categoryId=" + categoryId + "&";
+        }
+        if (brandId) {
+            url += "brandId=" + brandId + "&";
+        }
+
+        window.location.href = url.slice(0, -1); // Xóa ký tự `&` cuối cùng nếu có
+    }
 </script>
