@@ -22,8 +22,7 @@ CREATE TABLE users (
     skinTypeId INT FOREIGN KEY REFERENCES skin_types(id),
     loyaltyPoints INT DEFAULT 0,
     roleId INT FOREIGN KEY REFERENCES roles(id),
-    createdAt DATETIME DEFAULT GETDATE(),
-    updatedAt DATETIME DEFAULT GETDATE()
+    createdAt DATETIME DEFAULT GETDATE()
 );
 
 
@@ -53,8 +52,7 @@ CREATE TABLE products (
     stock INT DEFAULT 0,
     rating FLOAT DEFAULT 0,
     imageUrl NVARCHAR(MAX),
-    createdAt DATETIME DEFAULT GETDATE(),
-    updatedAt DATETIME DEFAULT GETDATE()
+    createdAt DATETIME DEFAULT GETDATE()
 );
 -------------------------------------------
 CREATE TABLE product_details (
@@ -71,8 +69,7 @@ CREATE TABLE orders (
     userId INT FOREIGN KEY REFERENCES users(id),
     totalPrice DECIMAL(10,2) NOT NULL,
     status NVARCHAR(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')) DEFAULT 'pending',
-    createdAt DATETIME DEFAULT GETDATE(),
-    updatedAt DATETIME DEFAULT GETDATE()
+    createdAt DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE order_items (
@@ -163,8 +160,7 @@ CREATE TABLE content (
     imageUrl NVARCHAR(MAX),
     isPublished BIT DEFAULT 1,
     publishedAt DATETIME,
-    createdAt DATETIME DEFAULT GETDATE(),
-    updatedAt DATETIME DEFAULT GETDATE()
+    createdAt DATETIME DEFAULT GETDATE()
 );
 
 
