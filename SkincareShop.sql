@@ -62,7 +62,8 @@ CREATE TABLE product_details (
     productId INT FOREIGN KEY REFERENCES products(id) ON DELETE CASCADE,
     manufactureDate DATE,
     expiryDate DATE,
-    quantity INT DEFAULT 0
+    quantity INT DEFAULT 0,
+    createdDate DATETIME DEFAULT GETDATE()  -- Thêm trường mới này
 );
 
 CREATE TABLE orders (
@@ -312,20 +313,21 @@ INSERT INTO products (categoryId, brandId, name, description, price, stock, rati
 
 -- Add this after all product insertions
 -- Insert product details
-INSERT INTO product_details (productId, manufactureDate, expiryDate, quantity) VALUES
-(1, '2023-01-15', '2025-01-15', 50),
-(2, '2023-02-10', '2025-02-10', 45),
-(3, '2023-01-20', '2025-01-20', 100),
-(4, '2023-03-05', '2025-03-05', 80),
-(5, '2023-02-15', '2026-02-15', 120),
-(6, '2023-03-10', '2025-03-10', 60),
-(7, '2023-04-05', '2025-04-05', 90),
-(8, '2023-02-25', '2025-02-25', 55),
-(9, '2023-01-30', '2025-01-30', 70),
-(10, '2023-03-15', '2025-03-15', 20),
-(11, '2023-05-15', '2025-05-15', 40),
-(12, '2023-06-10', '2025-06-10', 65),
-(13, '2023-07-20', '2025-07-20', 30);
+-- Cập nhật câu INSERT product_details để bao gồm createdDate
+INSERT INTO product_details (productId, manufactureDate, expiryDate, quantity, createdDate) VALUES
+(1, '2023-01-15', '2025-01-15', 50, '2023-01-15'),
+(2, '2023-02-10', '2025-02-10', 45, '2023-02-10'),
+(3, '2023-01-20', '2025-01-20', 100, '2023-01-20'),
+(4, '2023-03-05', '2025-03-05', 80, '2023-03-05'),
+(5, '2023-02-15', '2026-02-15', 120, '2023-02-15'),
+(6, '2023-03-10', '2025-03-10', 60, '2023-03-10'),
+(7, '2023-04-05', '2025-04-05', 90, '2023-04-05'),
+(8, '2023-02-25', '2025-02-25', 55, '2023-02-25'),
+(9, '2023-01-30', '2025-01-30', 70, '2023-01-30'),
+(10, '2023-03-15', '2025-03-15', 20, '2023-03-15'),
+(11, '2023-05-15', '2025-05-15', 40, '2023-05-15'),
+(12, '2023-06-10', '2025-06-10', 65, '2023-06-10'),
+(13, '2023-07-20', '2025-07-20', 30, '2023-07-20');
 
 -- ===============================
 -- PRODUCT-SKIN TYPE RELATIONSHIPS
