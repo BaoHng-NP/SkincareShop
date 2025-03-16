@@ -67,8 +67,11 @@ CREATE TABLE product_details (
 CREATE TABLE orders (
     id INT IDENTITY(1,1) PRIMARY KEY,
     userId INT FOREIGN KEY REFERENCES users(id),
+    address NVARCHAR(MAX) NOT NULL,
+    phone NVARCHAR(20) NOT NULL,
     totalPrice DECIMAL(10,2) NOT NULL,
-    status NVARCHAR(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')) DEFAULT 'pending',
+    paymentMethod NVARCHAR(50) NOT NULL,
+    status NVARCHAR(50),
     createdAt DATETIME DEFAULT GETDATE()
 );
 
@@ -80,15 +83,7 @@ CREATE TABLE order_items (
     unitPrice DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE payments (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    orderId INT FOREIGN KEY REFERENCES orders(id) ON DELETE CASCADE,
-    paymentMethod NVARCHAR(50) CHECK (paymentMethod IN ('credit_card', 'paypal', 'cod', 'bank_transfer')),
-    paymentStatus NVARCHAR(50) CHECK (paymentStatus IN ('pending', 'completed', 'failed', 'refunded')) DEFAULT 'pending',
-    transactionId NVARCHAR(255) UNIQUE,
-    amount DECIMAL(10,2) NOT NULL,
-    createdAt DATETIME DEFAULT GETDATE()
-);
+
 
 
 CREATE TABLE skin_quiz_questions (
@@ -121,7 +116,7 @@ CREATE TABLE feedbacks (
     id INT IDENTITY(1,1) PRIMARY KEY,
     userId INT FOREIGN KEY REFERENCES users(id),
     productId INT FOREIGN KEY REFERENCES products(id),
-    rating INT CHECK (rating BETWEEN 1 AND 5),
+    rating INT,
     comment NVARCHAR(MAX),
     createdAt DATETIME DEFAULT GETDATE()
 );
@@ -129,7 +124,7 @@ CREATE TABLE feedbacks (
 CREATE TABLE discounts (
     id INT IDENTITY(1,1) PRIMARY KEY,
     code NVARCHAR(50) UNIQUE NOT NULL,
-    discountType NVARCHAR(50) CHECK (discountType IN ('percentage', 'fixed')),
+    discountType NVARCHAR(50),
     discountValue DECIMAL(10,2) NOT NULL,
     requiredPoints INT NOT NULL DEFAULT 0,  -- Điểm cần để đổi voucher
     expirationDate DATE,
