@@ -48,6 +48,8 @@ namespace SkincareProductSalesSystem.Pages.Auth
             {
                 FullName = Input.FullName,
                 Email = Input.Email,
+                Phone = Input.Phone,
+                Address = Input.Address,
                 PasswordHash = hashedPassword,
                 RoleId = 2
             };
@@ -92,5 +94,15 @@ namespace SkincareProductSalesSystem.Pages.Auth
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Required]
+        [Phone]
+        [MinLength(9, ErrorMessage = "Phone must be at least 9 number.")]
+        [Display(Name = "Phone Number")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Address")]
+        public string Address { get; set; } = string.Empty;
     }
 }

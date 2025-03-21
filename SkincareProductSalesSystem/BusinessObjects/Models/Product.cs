@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 namespace BusinessObjects.Models;
+
 public partial class Product
 {
     public int Id { get; set; }
@@ -24,8 +25,6 @@ public partial class Product
 
     public DateTime? CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
-
     public virtual Brand? Brand { get; set; }
 
     public virtual Category? Category { get; set; }
@@ -33,6 +32,8 @@ public partial class Product
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    public virtual ICollection<ProductDetail> ProductDetails { get; set; } = new List<ProductDetail>();
 
     public virtual ICollection<SkinType> SkinTypes { get; set; } = new List<SkinType>();
 }

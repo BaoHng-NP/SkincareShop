@@ -1,0 +1,114 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Customer.RecommendedModel
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container-custom {
+        max-width: 90%;
+        max-width: 1200px;
+        margin: auto;
+        background-color: white;
+        padding: 30px 15px;
+        border-radius: 10px;
+    }
+
+    h2, h3, h4 {
+        color: #616e5e;
+    }
+
+    .text-highlight {
+        color: #495649;
+        font-size: 20px;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+        max-width: 250px; /* Giảm kích thước thẻ */
+        margin: auto; /* Căn giữa */
+    }
+
+  
+    .product-card img {
+        width: 100%;
+        height: auto; /* Giữ nguyên tỷ lệ */
+        max-height: 180px;
+        object-fit: contain;
+        padding: 10px;
+    }
+
+    .product-name {
+        font-size: 17px;
+        font-weight: 600;
+        color: #495649;
+        text-decoration: none;
+    }
+
+        .product-name:hover {
+            color: #616e5e;
+        }
+
+
+    .btn-custom {
+        background-color: #616e5e;
+        border: none;
+    }
+
+        .btn-custom:hover {
+            background-color: #4e584b;
+        }
+</style>
+
+<div class="bg-white">
+    <div class="container-custom">
+        <h2 class="text-center fw-bold">🌿 Your Personalized Skincare Routine</h2>
+        <p class="text-muted text-center">Follow these steps to maintain healthy skin.</p>
+
+        <div class="text-center mb-4">
+            <h3 class="text-highlight fw-bold">Your Skin Type: @Model.SkinType.Name</h3>
+            <p class="lead text-muted">@Model.SkinType.Description</p>
+        </div>
+
+        @foreach (var step in Model.SkinCareRoutine)
+        {
+            <h3 class="fw-bold text-highlight mt-4">Step @step.StepOrder: @step.StepName</h3>
+            <p class="text-muted">@step.Description</p>
+
+            @if (step.RecommendedProducts.Any())
+            {
+                <h4 class="fw-bold text-highlight mt-4">🛍️ Recommended @step.StepName Products</h4>
+                <div class="row mt-3 ">
+                    @foreach (var product in step.RecommendedProducts)
+                    {
+                        <div class="col-md-3 mb-3">
+                            <!-- Thu nhỏ col-md-4 xuống col-md-3 -->
+                            <div class="card product-card shadow-sm">
+                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-highlight">
+                                        <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="product-name">@product.Name</a>
+                                    </h5>
+                               
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted fst-italic">No recommended products available for this step.</p>
+            }
+        }
+
+        <div class="text-center mt-5">
+            <a asp-page="/Customer/SkinTest" class="btn btn-custom text-white">🔄 Take the Quiz Again</a>
+        </div>
+    </div>
+</div>

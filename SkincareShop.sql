@@ -1,4 +1,8 @@
-﻿Create database SkincareShop;
+﻿USE master;
+ALTER DATABASE SkincareShop SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE SkincareShop;
+
+Create database SkincareShop;
 
 Use SkincareShop;
 
@@ -167,7 +171,6 @@ USE SkincareShop;
 
 -- Insert roles
 INSERT INTO roles (roleName) VALUES 
-('Admin'),
 ('Staff'),
 ('Customer');
 

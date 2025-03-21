@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddAuthen();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRepositoryUOW();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>

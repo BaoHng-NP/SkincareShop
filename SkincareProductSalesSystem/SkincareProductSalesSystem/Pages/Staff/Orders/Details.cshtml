@@ -1,0 +1,101 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Orders.DetailsModel
+
+
+
+@{
+    ViewData["Title"] = "Order Detail";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Order Detail</h1>
+
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3 text-primary">Order Information</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold">Customer Name</dt>
+            <dd class="col-sm-9">@Model.Order.User.FullName</dd>
+
+            <dt class="col-sm-3 fw-bold">Address</dt>
+            <dd class="col-sm-9">@Model.Order.Address</dd>
+
+            <dt class="col-sm-3 fw-bold">Phone</dt>
+            <dd class="col-sm-9">@Model.Order.Phone</dd>
+
+            <dt class="col-sm-3 fw-bold">Total Price</dt>
+            <dd class="col-sm-9 text-danger fw-bold">@Model.Order.TotalPrice.ToString("N0") ₫</dd>
+
+            <dt class="col-sm-3 fw-bold">Payment Method</dt>
+            <dd class="col-sm-9">@Model.Order.PaymentMethod</dd>
+
+            <dt class="col-sm-3 fw-bold">Status</dt>
+            <dd class="col-sm-9">
+                <span class="badge @(GetStatusClass(Model.Order.Status))">@(Model.Order.Status.StartsWith("Completed") ? "Completed" : Model.Order.Status)</span>
+            </dd>
+
+            <dt class="col-sm-3 fw-bold">Created At</dt>
+            <dd class="col-sm-9">@Model.Order.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</dd>
+        </dl>
+    </div>
+
+    <div class="card shadow-sm p-4 mt-4">
+        <h4 class="mb-3 text-primary">Order Items</h4>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">#</th>
+                    <th>Product</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-end">Unit Price</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                }
+                @foreach (var item in Model.Order.OrderItems)
+                {
+                    <tr>
+                        <td class="text-center">@index</td>
+                        <td class="d-flex align-items-center">
+                            <img src="@item.Product?.ImageUrl" alt="@item.Product?.Name" class="rounded border" style="width: 80px; height: 100px; margin-right: 10px;">
+                            <div>
+                                <strong>@item.Product?.Name</strong>
+                                <div class="text-muted">Item No: @item.ProductId</div>
+                            </div>
+                        </td>
+                        <td class="text-center">@item.Quantity</td>
+                        <td class="text-end">@item.UnitPrice.ToString("N0") ₫</td>
+                        <td class="text-end fw-bold text-danger">
+                            @(((item?.UnitPrice ?? 0) * (item?.Quantity ?? 0)).ToString("N0")) ₫
+                        </td>
+                    </tr>
+                    index++;
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-end mb-5">
+        <a asp-page="/Staff/Orders/Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning ",
+            "Confirmed" => "bg-primary",
+            "Shipping" => "bg-info",
+            "Completed-Feedback" => "bg-success",
+            "Completed-NonFeedback" => "bg-success",
+            "Canceled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

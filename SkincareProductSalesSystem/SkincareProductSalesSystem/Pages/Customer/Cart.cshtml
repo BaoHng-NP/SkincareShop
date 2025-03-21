@@ -3,43 +3,206 @@
 @{
     ViewData["Title"] = "Your Cart";
 }
+<style>
+    .stepper-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px 0;
+        width: 100%;
+        max-width: 600px; /* Giới hạn chiều rộng Stepper */
+    }
 
-<h2>Your Shopping Cart</h2>
+    .step {
+        text-align: center;
+        flex: 1;
+        position: relative;
+    }
 
-@if (Model.CartItems == null || !Model.CartItems.Any())
-{
-    <div class="alert alert-warning">Your cart is empty.</div>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.CartItems)
+    .step-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step.active .step-circle {
+        background-color: black;
+        color: white;
+    }
+
+    .step.completed .step-circle {
+        background-color: black;
+        color: white;
+    }
+
+    .stepper-line {
+        position: absolute;
+        height: 4px; /* Đường nối dày hơn */
+        background-color: #e0e0e0;
+        width: 100%;
+        top: 60%;
+        left: 0;
+        z-index: 1;
+        transform: translateY(-60%);
+    }
+
+    .step.active .stepper-line,
+    .step.completed .stepper-line {
+        background-color: black;
+    }
+
+    .step-label {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+    }
+
+    .step.active .step-label {
+        font-weight: bold;
+        color: black;
+    }
+
+    /* Đảm bảo tiêu đề và stepper cùng hàng */
+    .cart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>
+
+
+
+<div class="container py-3">
+    <div class="cart-header">
+        <h3 class="mb-4" style="font-weight: bold">Your Shopping Cart</h3>
+
+        <!-- Stepper -->
+        <div class="stepper-container">
+            <div class="step active">
+                <div class="step-circle">1</div>
+                <span class="step-label">View Cart</span>
+                <div class="stepper-line"></div>
+            </div>
+
+            <div class="step">
+                <div class="step-circle">2</div>
+                <span class="step-label">Checkout</span>
+                <div class="stepper-line"></div>
+            </div>
+
+            <div class="step">
+                <div class="step-circle">3</div>
+                <span class="step-label">Payment</span>
+                <div class="stepper-line"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-9">
+
+
+            @if (Model.CartItems == null || !Model.CartItems.Any())
             {
-                <tr>
-                    <td><img src="@item.ImageUrl" alt="@item.ProductName" style="width: 50px;"></td>
-                    <td>@item.ProductName</td>
-                    <td>$@item.Price</td>
-                    <td>@item.Quantity</td>
-                    <td>$@(item.Price * item.Quantity)</td>
-                    <td>
-                        <form method="post">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
-                            <button type="submit" asp-page-handler="RemoveFromCart" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    </td>
-                </tr>
+                <div class="alert alert-warning text-center">No items in cart</div>
             }
-        </tbody>
-    </table>
-}
+            else
+            {
+                <div class="card p-3 shadow-sm rounded">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr>
+                                    <td class="d-flex align-items-center">
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded" style="width: 80px; height: 100px; margin-right: 10px;">
+                                        <div>
+                                            <strong>@item.ProductName</strong>
+                                            <div class="text-muted">Item No: @item.ProductId</div>
+                                        </div>
+                                    </td>
+                                    <td>@((item?.Price ?? 0).ToString("N0")) ₫</td>
+                                    <td>
+                                        <form method="post">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <div class="d-flex align-items-center">
+                                                <input type="text" class="form-control text-center mx-1 quantity-input" value="@item.Quantity" data-id="@item.ProductId" readonly style="width: 45px; height: 30px; padding: 0;">
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td class="total-price" data-id="@item.ProductId"> @(((item?.Price ?? 0) * (item?.Quantity ?? 0)).ToString("N0")) ₫</td>
+
+                                    <td>
+                                        <form method="post">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <button type="submit" asp-page-handler="RemoveFromCart" class="btn btn-danger btn-sm">Remove</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Summary Section -->
+        <div class="col-lg-3">
+            <div class="card p-4 shadow-sm rounded">
+                <h5 class="fw-bold">Summary</h5>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal</span>
+                    <span class="fw-bold"></span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Shipping</span>
+                    <span>TBD</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Sale Tax</span>
+                    <span>TBD</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Estimated Total</span>
+                    <span>@Model.Subtotal.ToString("N0") VND</span>
+                </div>
+                <hr>
+                <a href="/checkout" class="btn btn-dark w-100 @(Model.CartItems.Any() ? "" : "disabled")">Checkout</a>
+                <small class="text-muted d-block text-center mt-2">Need help? Call us at 1-877-707-6272</small>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+
+    function updateCartSummary() {
+        let subtotal = 0;
+        document.querySelectorAll('.total-price').forEach(item => {
+            subtotal += parseFloat(item.innerText.replace('$', ''));
+        });
+
+        document.querySelector('.subtotal-price').innerText = `$${subtotal.toFixed(2)}`;
+    }
+</script>

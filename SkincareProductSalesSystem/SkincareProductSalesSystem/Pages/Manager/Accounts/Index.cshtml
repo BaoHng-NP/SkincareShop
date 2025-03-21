@@ -31,7 +31,6 @@
             <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Birthdate)</th>
             <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().LoyaltyPoints)</th>
             <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().CreatedAt)</th>
-            <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().UpdatedAt)</th>
             <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().Role)</th>
             <th>@Html.DisplayNameFor(model => model.User.FirstOrDefault().SkinType)</th>
             <th></th>
@@ -66,9 +65,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
+     
             <td>
                 @Html.DisplayFor(modelItem => item.Role.RoleName)
             </td>

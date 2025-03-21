@@ -22,10 +22,19 @@ namespace FUNewsManagementSystem
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IProductDetailService, ProductDetailService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<ISkinQuizQuestionService, SkinQuizQuestionsService>();
+            services.AddScoped<ISkinTypeService, SkinTypeService>();
+            services.AddScoped<IUserSkinTestService, UserSkinTestService>();
+            services.AddScoped<ISkinQuizAnswerService, SkinQuizAnswerService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IVnPayService, VnPayService>();
+            services.AddScoped<IOrderService, OrderService>();
 
 
         }

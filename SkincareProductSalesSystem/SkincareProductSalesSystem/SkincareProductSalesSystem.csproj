@@ -19,8 +19,5 @@
     <ProjectReference Include="..\BusinessObjects\BusinessObjects.csproj" />
     <ProjectReference Include="..\System.BLL\System.BLL.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pages\Staff\" />
-  </ItemGroup>
 
 </Project>

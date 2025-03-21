@@ -1,0 +1,25 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Customer.OrderSuccessModel
+@{
+    ViewData["Title"] = "Order Success";
+    Layout = null;
+}
+
+<div style="width: 100%; padding: 40px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <h1 style="font-size: 35px; font-weight: 700;">Order <span style="color: #ff8d04;">Confirmation</span></h1>
+
+    <div style="width: 50%; display: flex; align-items: center; justify-content: center; margin-top: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8a8 8 0 1 1-16 0 8 8 0 0 1 16 0zM6.733 11.133l5.482-5.482-1.066-1.066-4.416 4.417-1.733-1.733-1.066 1.066 2.8 2.8z" />
+        </svg>
+        <div style="margin-left: 10px;">
+            <p style="font-size: 17px; color: gray; letter-spacing: 0.1em;">Oder: #@Model.OrderId </p>
+            <h2 style="font-size: 30px; font-weight: 700;">Thank you, @Model.UserName !</h2>
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        window.location.href = "/Customer/OrderHistory"; // Thay đổi đường dẫn trang đích
+    }, 3000); // 3000ms = 3 giây
+</script>

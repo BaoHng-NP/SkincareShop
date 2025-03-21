@@ -1,0 +1,219 @@
+﻿@page "/checkout"
+@model SkincareProductSalesSystem.Pages.Customer.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<style>
+    .form-container {
+        background: white;
+        padding: 40px 70px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .stepper-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px 0;
+        width: 100%;
+        max-width: 600px; /* Giới hạn chiều rộng Stepper */
+    }
+
+    .step {
+        text-align: center;
+        flex: 1;
+        position: relative;
+    }
+
+    .step-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step.active .step-circle {
+        background-color: black;
+        color: white;
+    }
+
+    .step.completed .step-circle {
+        background-color: black;
+        color: white;
+    }
+
+    .stepper-line {
+        position: absolute;
+        height: 4px; /* Đường nối dày hơn */
+        background-color: #e0e0e0;
+        width: 100%;
+        top: 60%;
+        left: 0;
+        z-index: 1;
+        transform: translateY(-60%);
+    }
+
+    .step.active .stepper-line,
+    .step.completed .stepper-line {
+        background-color: black;
+    }
+
+    .step-label {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+    }
+
+    .step.active .step-label {
+        font-weight: bold;
+        color: black;
+    }
+
+    /* Đảm bảo tiêu đề và stepper cùng hàng */
+    .cart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="container py-3">
+    <div class="cart-header">
+        <h2 class="mb-4" style="font-weight: bold; font-size:50px">Checkout</h2>
+
+        <!-- Stepper -->
+        <div class="stepper-container">
+            <div class="step completed">
+                <div class="step-circle"> ✓</div>
+                <span class="step-label">View Cart</span>
+                <div class="stepper-line"></div>
+            </div>
+
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <span class="step-label">Checkout</span>
+                <div class="stepper-line"></div>
+            </div>
+
+            <div class="step">
+                <div class="step-circle">3</div>
+                <span class="step-label">Payment</span>
+                <div class="stepper-line"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Form nhập thông tin bên trái -->
+        <div class="col-lg-6">
+            <div class="form-container">
+                <h3 class="fw-bold">Shipping Information</h3>
+                <h6 class="text-muted" style="font-style:italic; font-weight:100">*Please fill in form</h6>
+                <form method="post" style="margin-top:20px">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="FullName" value="@Model.UserInfo.FullName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" value="@Model.UserInfo.Email" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" name="Phone" value="@Model.UserInfo.Phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" name="Address" value="@Model.UserInfo.Address" required/>
+                    </div>
+                    <h5 class="fw-bold mt-4">Payment Method</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <select class="form-select" name="PaymentMethod" required>
+                            <option value="Online">VNPAY </option>
+                            <option value="COD">Cash on Delivery</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="Amount" value="@Model.Subtotal">
+                    <button type="submit" class="btn btn-dark w-100 @(Model.CartItems.Any() ? "" : "disabled")" style="margin-top:18px">Place Order</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Summary bên phải -->
+        <div class="col-lg-6">
+            <div class="card p-4 shadow-sm rounded">
+                <h5 class="fw-bold">Order Summary</h5>
+                <hr>
+                <div >
+                    @if (Model.CartItems == null || !Model.CartItems.Any())
+                    {
+                        <div class="alert alert-warning text-center">No items for checkout</div>
+                    }
+                    else
+                    {
+                        <div class="card p-3 shadow-sm rounded">
+                            <table class="table align-middle">
+
+                                <tbody>
+                                    @foreach (var item in Model.CartItems)
+                                    {
+                                        <tr>
+                                            <td class="d-flex align-items-center">
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded" style="width: 80px; height: 100px; margin-right: 10px;">
+                                                <div>
+                                                    <strong>@item.ProductName</strong>
+                                                    <div class="text-muted"><span>x</span>@item.Quantity </div>
+                                                    <strong>@(item.Price * item.Quantity) VND</strong>
+                                                </div>
+                               
+                                            </td>
+                                  
+
+                                            <td>
+                                                <form method="post">
+                                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                                    <button type="submit" asp-page-handler="RemoveFromCart" class="btn btn-danger btn-sm">Remove</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal</span>
+                    <span class="fw-bold">@Model.Subtotal.ToString("0") VND</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Shipping</span>
+                    <span>TBD</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Sale Tax</span>
+                    <span>TBD</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Total</span>
+                    <span>$@Model.Subtotal.ToString("0.00")</span>
+                </div>
+                <hr>
+                <small class="text-muted d-block text-center mt-2">Need help? Call us at 1-877-707-6272</small>
+            </div>
+        </div>
+    </div>
+</div>

@@ -72,6 +72,15 @@ namespace System.BLL.Services
 
             return await query.OrderBy(p => p.Name).ToListAsync(); // Gọi ToListAsync() chỉ 1 lần
         }
+        public async Task<IEnumerable<Product>> GetProductsBySkinTypeAsync(int skinTypeId)
+        {
+            return await _repository
+                .FindAll(p => p.SkinTypes.Any(st => st.Id == skinTypeId),
+                         u => u.Category,
+                         u => u.Brand,
+                         u => u.SkinTypes)
+                .ToListAsync();
+        }
 
 
     }

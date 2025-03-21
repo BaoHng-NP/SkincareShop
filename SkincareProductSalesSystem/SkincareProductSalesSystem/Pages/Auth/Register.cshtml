@@ -32,7 +32,16 @@
                     <input asp-for="Input.Email" class="form-control" placeholder="Enter your email" required />
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
-
+                <div class="mb-3">
+                    <label asp-for="Input.Phone" class="form-label">Phone Number</label>
+                    <input asp-for="Input.Phone" class="form-control" placeholder="Enter your phone number" required />
+                    <span asp-validation-for="Input.Phone" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Address" class="form-label">Address</label>
+                    <input asp-for="Input.Address" class="form-control" placeholder="Enter your address" required />
+                    <span asp-validation-for="Input.Address" class="text-danger"></span>
+                </div>
                 <div class="mb-3">
                     <label asp-for="Input.Password" class="form-label">Password</label>
                     <input type="password" asp-for="Input.Password" class="form-control" placeholder="Enter your password" required />

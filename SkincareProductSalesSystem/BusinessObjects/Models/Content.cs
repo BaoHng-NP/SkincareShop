@@ -1,8 +1,8 @@
-﻿using BusinessObjects.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace BusinessObjects.Models;
+
 public partial class Content
 {
     public int Id { get; set; }
@@ -22,8 +22,6 @@ public partial class Content
     public DateTime? PublishedAt { get; set; }
 
     public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
 
     public virtual User? Author { get; set; }
 }

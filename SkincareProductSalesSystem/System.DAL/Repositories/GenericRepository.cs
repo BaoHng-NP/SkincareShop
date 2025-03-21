@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BusinessObjects.Models;
+using Microsoft.EntityFrameworkCore;
 using System.DAL;
 using System.DAL.Repositories;
 using System.Linq.Expressions;
@@ -67,6 +68,6 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     {
         _context.Set<TEntity>().Remove(entity);
     }
-
   
+
 }

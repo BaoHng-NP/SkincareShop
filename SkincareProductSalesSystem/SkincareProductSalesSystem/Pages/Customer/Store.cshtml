@@ -202,8 +202,8 @@
                                         </h5>
                                         <p class="text-muted">@product.Description</p>
                                         <div class="d-flex justify-content-center align-items-center gap-2">
-                                            <span class="text-decoration-line-through text-muted">$@((product.Price * 2).ToString("0.00"))</span>
-                                            <span class="text-danger fw-bold">$@product.Price</span>
+                                        <span class="text-decoration-line-through text-muted">@((product.Price * 2).ToString("N0")) ₫</span>
+                                        <span class="text-danger fw-bold">@product.Price.ToString("N0") ₫</span>
                                         </div>
                                     <button class="btn add-to-cart-btn"
                                             data-id="@product.Id"

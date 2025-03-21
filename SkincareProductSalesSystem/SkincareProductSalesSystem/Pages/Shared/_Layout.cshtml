@@ -6,13 +6,17 @@
 @*     var cartCount = cart.Sum(i => i.Quantity ?? 0); // Đảm bảo không bị null *@
 @* } *@
 
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
+@{
+    var skinTypeId = HttpContextAccessor.HttpContext?.Session.GetInt32("SkinTypeId");
+}
 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
- 
+
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,88 +24,100 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
+        html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        }
+
+        main {
+        flex: 1;
+        }
         body {
-            background-color: #f8f9fa;
+        background-color: #f8f9fa;
         }
 
         .navbar {
-            background-color: #4a5548 !important;
-            padding: 1rem 2rem; /* Tăng padding cho navbar */
+        background-color: #4a5548 !important;
+        padding: 1rem 2rem; /* Tăng padding cho navbar */
         }
 
         .navbar-brand {
-            color: #ffffff !important;
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding : 0 2rem;
+        color: #ffffff !important;
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding : 0 2rem;
         }
 
         .nav-link {
-            color: #ffffff !important;
-            font-size: 1rem;
-            padding: 0.75rem 2rem;
-            transition: 0.3s;
+        color: #ffffff !important;
+        font-size: 1rem;
+        padding: 0.75rem 2rem;
+        transition: 0.3s;
         }
 
-            .nav-link:hover {
-                color: #d3d3d3 !important;
-                background-color: rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
-            }
+        .nav-link:hover {
+        color: #d3d3d3 !important;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        }
 
         .btn-outline-danger {
-            color: #ffffff;
-            border-color: #ffffff;
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
+        color: #ffffff;
+        border-color: #ffffff;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
         }
 
-            .btn-outline-danger:hover {
-                background-color: #ffffff;
-                color: #4a5548;
-            }
+        .btn-outline-danger:hover {
+        background-color: #ffffff;
+        color: #4a5548;
+        }
 
         .btn-primary {
-            background-color: #4a5548;
-            border-color: #4a5548;
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
+        background-color: #4a5548;
+        border-color: #4a5548;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
         }
 
-            .btn-primary:hover {
-                background-color: #505a4d;
-                border-color: #505a4d;
-            }
+        .btn-primary:hover {
+        background-color: #505a4d;
+        border-color: #505a4d;
+        }
 
         .footer {
-            background-color: #4a5548;
-            color: #ffffff;
-            padding: 1rem 0;
+        background-color: #4a5548;
+        color: #ffffff;
+        padding: 1rem 0;
+        text-align: center;
+        margin-top: auto;
         }
 
-            .footer a {
-                color: #ffffff;
-                text-decoration: none;
-            }
+        .footer a {
+        color: #ffffff;
+        text-decoration: none;
+        }
 
-                .footer a:hover {
-                    color: #d3d3d3;
-                }
+        .footer a:hover {
+        color: #d3d3d3;
+        }
 
         .cart-icon {
-            font-size: 1.5rem;
-            margin-right: 5px;
+        font-size: 1.5rem;
+        margin-right: 5px;
         }
 
         .greeting {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #ffffff;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #ffffff;
 
         }
 
         .btn-group {
-            gap: 0.5rem;
+        gap: 0.5rem;
         }
     </style>
 </head>
@@ -111,7 +127,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-page="/Index">Skinalyze</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -125,7 +141,7 @@
                             }
                             @if (User.IsInRole("Staff"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-page="/NewsArticles/Index">Manage News</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Orders/Index">Manage Orders</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Categories/Index">Manage Category</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Tags/Index">Manage Tag</a></li>
                             }
@@ -135,8 +151,15 @@
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/store">Store</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/about">About</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/contact">Contact</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/contact">Diagnosis</a></li>
-                               
+                                <li class="nav-item"><a class="nav-link" asp-page="customer/skintest">Skin Quiz</a></li>
+                                @if (skinTypeId.HasValue && skinTypeId > 0)
+                                {
+                                    <a class="nav-link" asp-page="/Customer/Recommended" asp-route-skinTypeId="@skinTypeId">Routine</a>
+                                }
+                                else
+                                {
+                                    <a class="nav-link" asp-page="/Customer/SkinTest">Routine</a>
+                                }
                             }
                         }
                         else
@@ -145,7 +168,7 @@
                             <li class="nav-item"><a class="nav-link" asp-page="customer/store">Store</a></li>
                             <li class="nav-item"><a class="nav-link" asp-page="customer/about">About</a></li>
                             <li class="nav-item"><a class="nav-link" asp-page="customer/contact">Contact</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-page="/contact">Diagnosis</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="customer/skintest">Diagnosis</a></li>
 
                         }
                     </ul>
@@ -153,25 +176,37 @@
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <!-- Icon Giỏ Hàng -->
-                            <li class="nav-item">
-                                <a class="nav-link position-relative" asp-page="/Customer/Cart">
-                                    <i class="bi bi-cart3 fs-4"></i>
-                                    @* <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> *@
-                                    @*     @cartCount *@
-                                    @* </span> *@
+                            @if (User.IsInRole("Customer"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link position-relative" asp-page="/Customer/Cart">
+                                        <i class="bi bi-cart3 fs-4"></i>
+                                        @* <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> *@
+                                        @*     @cartCount *@
+                                        @* </span> *@
 
-                                </a>
-                            </li>
-
+                                    </a>
+                                </li>
+                            }
                             <!-- Dropdown Menu -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle fw-bold " style="padding-top: 1.2rem" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Hello, @User.Identity.Name
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" asp-page="/History"><i class="bi bi-clock-history me-2"></i>History</a></li>
+                                    
+                                    @if (User.IsInRole("Customer"))
+                                    {
+                                        <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Customer/OrderHistory">
+                                                <i class="bi bi-gift-fill text-info me-2"></i>Voucher
+                                            </a>
+                                        </li>
+                                        <li><a class="dropdown-item" asp-page="/Customer/OrderHistory"><i class="bi bi-clock-history me-2"></i>History</a></li>
+                                    }else{
+                                        <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-page="/Auth/Logout" method="post">
@@ -206,11 +241,13 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer mt-5">
-        <div class="container">
-            <p>&copy; 2025 Skinalyze - <a href="/contact">Contact</a> | <a href="/about">About</a></p>
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            <p>&copy; 2025 Skinalyze. All Rights Reserved.</p>
+            <p><a href="/Customer/contact">Contact Us</a> | <a href="/Customer/about">About</a></p>
         </div>
     </footer>
+
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

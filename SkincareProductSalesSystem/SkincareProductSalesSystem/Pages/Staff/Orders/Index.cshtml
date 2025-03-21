@@ -1,0 +1,149 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Orders.IndexModel
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary">Order Management</h1>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center">
+            <label for="statusFilter" class="me-2 fw-bold">Filter by Status:</label>
+            <select id="statusFilter" class="form-select w-auto" onchange="filterOrders()">
+                <option value="">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Shipping">Shipping</option>
+                <option value="Completed">Completed</option>
+                <option value="Canceled">Canceled</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-4">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th class="text-end">Total Price</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Customer</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orderTable">
+                @foreach (var item in Model.Order)
+                {
+                    <tr data-status="@item.Status" id="order-@item.Id">
+                        <td>@item.Address</td>
+                        <td>@item.Phone</td>
+                        <td class="text-end fw-bold text-danger">@item.TotalPrice.ToString("N0") ₫</td>
+                        <td>@item.PaymentMethod</td>
+                        <td>
+                            <span id="status-@item.Id" class="badge @(GetStatusClass(item.Status))">
+                                @(item.Status.StartsWith("Completed") ? "Completed" : item.Status)
+                            </span>
+
+                        </td>
+                        <td>@item.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.User.FullName</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                @if (item.Status == "Pending")
+                                {
+                                    <form method="post" asp-page-handler="Confirm" asp-route-id="@item.Id">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                onclick="return confirm('Are you sure you want to confirm this order?');">
+                                            <i class="bi bi-check-circle"></i> Confirm
+                                        </button>
+                                    </form>
+                                }
+                                else if (item.Status == "Confirmed")
+                                {
+                                    <form method="post" asp-page-handler="Confirm" asp-route-id="@item.Id">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                onclick="return confirm('Are you sure you want to deliver this order?');">
+                                            <i class="bi bi-check-circle"></i> Delivery
+                                        </button>
+                                    </form>
+                                }
+                                else if (item.Status == "Shipping")
+                                {
+                                    <form method="post" asp-page-handler="Confirm" asp-route-id="@item.Id">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                onclick="return confirm('Are you sure you want to complete this order?');">
+                                            <i class="bi bi-check-circle"></i> Complete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <!-- Giữ chỗ để căn chỉnh bằng class invisible -->
+                                    <div style="min-width: 87px;"></div>
+                                }
+
+                                <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+         function filterOrders() {
+        let selectedStatus = document.getElementById("statusFilter").value.toLowerCase();
+        let rows = document.querySelectorAll("#orderTable tr");
+
+        rows.forEach(row => {
+            let status = row.getAttribute("data-status");
+            if (status) {
+                status = status.toLowerCase();
+
+                // Chuyển "Completed-Feedback" và "Completed-NonFeedback" thành "Completed"
+                if (status.startsWith("completed")) {
+                    status = "completed";
+                }
+
+                row.style.display = (selectedStatus === "" || status === selectedStatus) ? "" : "none";
+            }
+        });
+    }
+
+
+    
+   
+
+    
+
+
+</script>
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning ",
+            "Confirmed" => "bg-primary",
+            "Shipping" => "bg-info",
+            "Completed-Feedback" => "bg-success",
+            "Completed-NonFeedback" => "bg-success",
+            "Canceled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

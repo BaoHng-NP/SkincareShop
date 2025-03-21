@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using BusinessObjects.Models;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BusinessObjects.Models;
+
 
 public partial class User
 {
@@ -27,8 +28,6 @@ public partial class User
 
     public DateTime? CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
-
     public virtual ICollection<Content> Contents { get; set; } = new List<Content>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
@@ -42,4 +41,6 @@ public partial class User
     public virtual SkinType? SkinType { get; set; }
 
     public virtual ICollection<UserSkinTest> UserSkinTests { get; set; } = new List<UserSkinTest>();
+
+    public virtual ICollection<UserVoucher> UserVouchers { get; set; } = new List<UserVoucher>();
 }

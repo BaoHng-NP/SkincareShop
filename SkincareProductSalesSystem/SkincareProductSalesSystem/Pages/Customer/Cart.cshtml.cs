@@ -10,6 +10,7 @@ namespace SkincareProductSalesSystem.Pages.Customer
     public class CartModel : PageModel
     {
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public decimal Subtotal { get; set; }
 
         public void OnGet()
         {
@@ -22,6 +23,8 @@ namespace SkincareProductSalesSystem.Pages.Customer
             string userId = User.Identity.Name;
             string cartKey = $"Cart_{userId}";
             CartItems = HttpContext.Session.GetObjectFromJson<List<CartItem>>(cartKey) ?? new List<CartItem>();
+            Subtotal = (decimal)CartItems.Sum(item => item.Price * item.Quantity);
+
         }
 
         public IActionResult OnPostRemoveFromCart(int productId)
@@ -68,5 +71,35 @@ namespace SkincareProductSalesSystem.Pages.Customer
 
             return RedirectToPage("/Customer/Cart");
         }
+
+        [HttpPost]
+        public JsonResult OnPostUpdateQuantity(int productId, string action)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return new JsonResult(new { success = false, message = "User not authenticated" });
+            }
+
+            string userId = User.Identity.Name;
+            string cartKey = $"Cart_{userId}";
+
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>(cartKey) ?? new List<CartItem>();
+
+            var cartItem = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (cartItem != null)
+            {
+                if (action == "increase") cartItem.Quantity++;
+                if (action == "decrease" && cartItem.Quantity > 1) cartItem.Quantity--;
+
+                HttpContext.Session.SetObjectAsJson(cartKey, cart);
+
+                decimal newTotal = (decimal)(cartItem.Quantity * cartItem.Price);
+                return new JsonResult(new { success = true, newQuantity = cartItem.Quantity, newTotal });
+            }
+
+            return new JsonResult(new { success = false, message = "Item not found" });
+        }
+
+
     }
 }

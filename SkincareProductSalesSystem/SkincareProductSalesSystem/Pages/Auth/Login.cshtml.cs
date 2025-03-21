@@ -74,7 +74,7 @@ namespace FUNewsManagementSystem.Pages.Auth
 
             return role switch
             {
-                "Staff" => RedirectToPage("/NewsArticles/Index"),
+                "Staff" => RedirectToPage("/Staff/Orders/Index"),
                 "Customer" => RedirectToPage("/Index"),            
             };
         }

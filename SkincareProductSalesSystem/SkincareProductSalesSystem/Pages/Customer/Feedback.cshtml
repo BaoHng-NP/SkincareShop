@@ -1,0 +1,88 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Customer.FeedbackModel
+@{
+    ViewData["Title"] = "Order Feedback";
+    var success = HttpContext.Request.Query["success"];
+    var points = HttpContext.Request.Query["points"];
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary text-center">Provide Feedback</h1>
+
+
+    @if (success == "true")
+    {
+        <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+            <div id="toast-feedback" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        🎉 Thank you for your feedback! You have earned <strong>@points</strong> loyalty points!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+   
+        <div class="card shadow-sm p-4">
+            <p class="text-info text-center">⭐ Submit your feedback and earn Loyalty Points!</p>
+            <form method="post">
+            <input type="hidden" name="orderId" value="@Model.Order.Id" />
+
+                <div class="row g-4">
+                    @for (int i = 0; i < Model.Feedbacks.Count; i++)
+                    {
+                        var feedback = Model.Feedbacks[i];
+                        var product = Model.Order.OrderItems.FirstOrDefault(p => p.ProductId == feedback.ProductId)?.Product;
+
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 d-flex flex-column shadow-sm">
+                                <div class="d-flex align-items-center">
+                                    <img src="@product?.ImageUrl" alt="@product?.Name" class="rounded border" style="width: 80px; height: 100px; margin-right: 15px;">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">@product?.Name</h6>
+                                        <p class="text-muted mb-0">Item No: @feedback.ProductId</p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <input type="hidden" asp-for="Feedbacks[i].ProductId" />
+                                    <input type="hidden" asp-for="Feedbacks[i].UserId" />
+
+                                    <label class="form-label">Rating:</label>
+                                    <select asp-for="Feedbacks[i].Rating" class="form-select">
+                                        <option value="5"> ⭐⭐⭐⭐⭐ - Excellent</option>
+                                        <option value="4"> ⭐⭐⭐⭐ - Very Good</option>
+                                        <option value="3"> ⭐⭐⭐ - Good</option>
+                                        <option value="2"> ⭐⭐ - Fair</option>
+                                        <option value="1"> ⭐ - Poor</option>
+                                    </select>
+
+                                    <label class="form-label mt-2">Comment:</label>
+                                    <textarea asp-for="Feedbacks[i].Comment" class="form-control" rows="2" placeholder="Write your feedback..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4 py-2 fw-bold">
+                        <i class="fas fa-paper-plane"></i> Submit Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    
+  
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastElement = document.getElementById("toast-feedback");
+        if (toastElement) {
+            var toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            toast.show();
+        }
+    });
+</script>
