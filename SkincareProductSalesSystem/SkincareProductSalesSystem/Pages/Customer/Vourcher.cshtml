@@ -1,0 +1,139 @@
+﻿@page "/voucher"
+@model SkincareProductSalesSystem.Pages.Customer.VourcherModel
+
+@{
+    ViewData["Title"] = "My Vouchers";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center text-dark mt-5"> Vouchers</h1>
+    <p class="text-center">Complete order or feedback to reward loyalty points</p>
+
+    <div class="text-end mb-3">
+        <p class="fw-bold text-dark">Your Loyalty Points: <span class="text-primary">@Model.UserInfo.LoyaltyPoints</span></p>
+    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    @if (Model.Discounts != null && Model.Discounts.Any() )
+    {
+        <div class="row ">
+            @foreach (var item in Model.Discounts)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card border-dark shadow-sm position-relative voucher-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark ">Voucher Code: <span class="fw-bold text-success" >@item.Code</span></h5>
+                            <p class="card-text text-muted">Loyalty Points Required: <span class="fw-bold text-danger">@item.RequiredPoints</span></p>
+                            <p class="card-text text-muted">Expiration Date: <span class="fw-bold">@item.ExpirationDate</span></p>
+                            @if (item.DiscountType == "fixed")
+                            {
+                                <p class="card-text">Discount Value: @((item?.DiscountValue ?? 0).ToString("N0")) ₫</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">Discount Percentage: @item.DiscountValue %</p>
+                                <p class="card-text">Max Discount: @((item?.MaxDiscount ?? 0).ToString("N0")) ₫</p>
+                            }
+                        </div>
+                        <form method="post">
+                            <input type="hidden" name="discountId" value="@item.Id" />
+                            <button type="submit" class="btn btn-success position-absolute top-50 start-50 translate-middle exchange-button">Exchange</button>
+                        </form>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">No available vouchers.</div>
+    }
+
+
+    <h1 class="text-center text-dark mt-4"> Your Vouchers</h1>
+    <p class="text-center">Manage and redeem your available vouchers.</p>
+
+
+
+    @if ( Model.UserVoucher != null)
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover shadow-sm">
+                <thead class="table-dark text-light">
+                    <tr>
+                        <th>Voucher Code</th>
+                        <th>Redeemed At</th>
+                        <th>Expiration Date</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.UserVoucher)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary">@item.Discount.Code</td>
+                            <td>@(item.RedeemedAt?.ToString("yyyy-MM-dd") ?? "Not Redeemed")</td>
+                            <td>@item.Discount.ExpirationDate</td>
+                            <td>
+                                @if (item.Discount.DiscountType == "fixed")
+                                {
+                                    <p class="text-success">Order discount: @((item?.Discount.DiscountValue ?? 0).ToString("N0")) VND</p>
+                                }
+                                else
+                                {
+                                    <p class="text-success">Orders are discounted @((item?.Discount.DiscountValue ?? 0).ToString("N0"))%, max @((item?.Discount.MaxDiscount ?? 0).ToString("N0")) VND per order</p>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">You don't have any vouchers yet.</div>
+    }
+
+    
+</div>
+
+<style>
+    
+    .voucher-card {
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .voucher-card:hover {
+            transform: scale(1.05);
+        }
+
+    .exchange-button {
+        display: none;
+    }
+
+    .voucher-card:hover .exchange-button {
+        display: block;
+    }
+
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        .table thead {
+            background-color: #4a5548;
+            color: white;
+        }
+</style>
+<script>
+    localStorage.removeItem("selectedVoucherId");
+</script>

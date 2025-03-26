@@ -15,11 +15,27 @@
         <div style="margin-left: 10px;">
             <p style="font-size: 17px; color: gray; letter-spacing: 0.1em;">Oder: #@Model.OrderId </p>
             <h2 style="font-size: 30px; font-weight: 700;">Thank you, @Model.UserName !</h2>
+            <p>Redirecting to your order history in <span id="countdown">3</span> seconds...</p>
         </div>
     </div>
 </div>
+
+
 <script>
-    setTimeout(function () {
-        window.location.href = "/Customer/OrderHistory"; // Thay đổi đường dẫn trang đích
-    }, 3000); // 3000ms = 3 giây
+    let count = 3;
+    const countdownElem = document.getElementById("countdown");
+
+    function updateCountdown() {
+        count--;
+        countdownElem.innerText = count;
+        if (count === 0) {
+            window.location.href = "/Customer/OrderHistory";
+        } else {
+            setTimeout(updateCountdown, 1000);
+        }
+    }
+
+    setTimeout(updateCountdown, 1000);
+        localStorage.removeItem("selectedVoucherId");
+
 </script>

@@ -151,7 +151,7 @@
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/store">Store</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/about">About</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/contact">Contact</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="customer/skintest">Skin Quiz</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/skintest">Skin Quiz</a></li>
                                 @if (skinTypeId.HasValue && skinTypeId > 0)
                                 {
                                     <a class="nav-link" asp-page="/Customer/Recommended" asp-route-skinTypeId="@skinTypeId">Routine</a>
@@ -199,7 +199,7 @@
                                     {
                                         <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                                         <li>
-                                            <a class="dropdown-item" asp-page="/Customer/OrderHistory">
+                                            <a class="dropdown-item" asp-page="/Customer/vourcher">
                                                 <i class="bi bi-gift-fill text-info me-2"></i>Voucher
                                             </a>
                                         </li>
@@ -224,7 +224,7 @@
                                 <a class="btn btn-primary btn-sm me-2" asp-page="/Auth/Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary btn-sm" asp-page="/Auth/Register">Register</a>
+                                <a class="btn  btn-sm btn-group" asp-page="/Auth/Register">Register</a>
                             </li>
                         }
                     </ul>

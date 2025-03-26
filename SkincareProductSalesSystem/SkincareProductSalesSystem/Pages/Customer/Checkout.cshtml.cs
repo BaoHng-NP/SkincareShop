@@ -15,11 +15,14 @@ namespace SkincareProductSalesSystem.Pages.Customer
         private readonly IAccountService _accountService;
         private readonly IOrderService _orderService;
         private readonly IVnPayService _vnPayService;
-        public CheckoutModel(IAccountService accountService, IOrderService orderService, IVnPayService vnpayService)
+        private readonly IUserVourcherService _userVourcherService;
+
+        public CheckoutModel(IAccountService accountService, IOrderService orderService, IVnPayService vnpayService, IUserVourcherService userVourcherService)
         {
             _accountService = accountService;
             _orderService = orderService;
             _vnPayService = vnpayService;
+            _userVourcherService = userVourcherService;
         }
 
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
@@ -27,6 +30,9 @@ namespace SkincareProductSalesSystem.Pages.Customer
         public decimal Subtotal { get; set; }
         [BindProperty]
         public PaymentInformationModel PaymentInfo { get; set; }
+        public IEnumerable<UserVoucher> UserVoucher { get; set; } = default!;
+        [BindProperty]
+        public decimal Amount { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync()
@@ -46,7 +52,7 @@ namespace SkincareProductSalesSystem.Pages.Customer
             }
 
             var user = await _accountService.GetAccountByIdAsync(int.Parse(userId)); // Lấy thông tin user từ database
-
+            UserVoucher = await _userVourcherService.GetUserVoucherByUserIdAsync(int.Parse(userId));
             if (user == null)
             {
                 return NotFound();
@@ -87,25 +93,36 @@ namespace SkincareProductSalesSystem.Pages.Customer
                 ModelState.AddModelError(string.Empty, "Your cart is empty.");
                 return Page();
             }
+
             if (string.IsNullOrEmpty(PaymentInfo.Phone) || string.IsNullOrEmpty(PaymentInfo.Address))
             {
                 ModelState.AddModelError(string.Empty, "Please fill all required fields.");
                 return Page();
             }
 
+            string voucherIdString = Request.Form["selectedVoucherId"];
+            int.TryParse(voucherIdString, out int voucherId);
+
+
+
             if (PaymentInfo.PaymentMethod == "Online")
             {
                 HttpContext.Session.SetObjectAsJson("PendingOrder", CartItems);
                 string paymentUrl = _vnPayService.CreatePaymentUrl(PaymentInfo, HttpContext);
+                if (voucherId > 0)
+                {
+                    await _userVourcherService.DeleteUserVoucherAsync(voucherId);
+                }
                 return Redirect(paymentUrl);
             }
+
             else if (PaymentInfo.PaymentMethod == "COD")
             {
                 var newOrder = new Order
                 {
                     UserId = UserInfo.Id,
                     CreatedAt = DateTime.Now,
-                    TotalPrice = Subtotal,
+                    TotalPrice = Amount,
                     PaymentMethod = "COD",
                     Status = "Pending",
                     Phone = PaymentInfo.Phone,
@@ -114,6 +131,11 @@ namespace SkincareProductSalesSystem.Pages.Customer
 
                 await _orderService.AddOrderAsync(newOrder, CartItems);
                 HttpContext.Session.Remove(cartKey);
+                if (voucherId > 0)
+                {
+                    Console.WriteLine($"Attempting to delete voucher: {voucherId}");
+                    await _userVourcherService.DeleteUserVoucherAsync(voucherId);
+                }
 
                 return RedirectToPage("/Customer/OrderSuccess", new { orderId = newOrder.Id, userName = UserInfo.FullName });
             }

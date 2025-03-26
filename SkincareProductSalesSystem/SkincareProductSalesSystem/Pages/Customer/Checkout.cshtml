@@ -134,7 +134,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <input class="form-control" name="Address" value="@Model.UserInfo.Address" required/>
+                        <input class="form-control" name="Address" value="@Model.UserInfo.Address" required />
                     </div>
                     <h5 class="fw-bold mt-4">Payment Method</h5>
                     <hr>
@@ -144,7 +144,8 @@
                             <option value="COD">Cash on Delivery</option>
                         </select>
                     </div>
-                    <input type="hidden" name="Amount" value="@Model.Subtotal">
+                    <input type="hidden" id="selectedVoucherId" name="selectedVoucherId" value="0">
+                    <input type="hidden" id="Amount" name="Amount" value="@Model.Subtotal">
                     <button type="submit" class="btn btn-dark w-100 @(Model.CartItems.Any() ? "" : "disabled")" style="margin-top:18px">Place Order</button>
                 </form>
             </div>
@@ -155,7 +156,7 @@
             <div class="card p-4 shadow-sm rounded">
                 <h5 class="fw-bold">Order Summary</h5>
                 <hr>
-                <div >
+                <div>
                     @if (Model.CartItems == null || !Model.CartItems.Any())
                     {
                         <div class="alert alert-warning text-center">No items for checkout</div>
@@ -164,7 +165,6 @@
                     {
                         <div class="card p-3 shadow-sm rounded">
                             <table class="table align-middle">
-
                                 <tbody>
                                     @foreach (var item in Model.CartItems)
                                     {
@@ -176,10 +176,7 @@
                                                     <div class="text-muted"><span>x</span>@item.Quantity </div>
                                                     <strong>@(item.Price * item.Quantity) VND</strong>
                                                 </div>
-                               
                                             </td>
-                                  
-
                                             <td>
                                                 <form method="post">
                                                     <input type="hidden" name="productId" value="@item.ProductId" />
@@ -194,26 +191,83 @@
                     }
                 </div>
                 <hr>
+
+                <!-- Chọn Voucher -->
+                <div class="mb-4">
+                    <label for="voucherSelect" class="form-label fw-bold">Apply Voucher:</label>
+                    <select id="voucherSelect" name="voucherSelect" class="form-select mt-1" onchange="updateTotal()">
+                        <option value="0" data-discount="0">No Voucher</option>
+                        @foreach (var voucher in Model.UserVoucher)
+                        {
+                            <option value="@voucher.Id"
+                                    data-discount="@voucher.Discount.DiscountValue"
+                                    data-type="@voucher.Discount.DiscountType"
+                                    data-max="@voucher.Discount.MaxDiscount">
+                                @voucher.Discount.Code - @voucher.Discount.DiscountValue.ToString("N0")
+                                @(voucher.Discount.DiscountType == "fixed" ? "₫" : "%")
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Hiển thị giá trị đơn hàng -->
                 <div class="d-flex justify-content-between">
                     <span>Subtotal</span>
-                    <span class="fw-bold">@Model.Subtotal.ToString("0") VND</span>
+                    <span class="fw-bold" id="subtotal">@((Model?.Subtotal ?? 0).ToString("N0")) ₫</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Discount</span>
+                    <span class="fw-bold text-danger" id="discount">0 ₫</span>
                 </div>
                 <div class="d-flex justify-content-between">
                     <span>Shipping</span>
-                    <span>TBD</span>
+                    <span>FREE</span>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span>Sale Tax</span>
-                    <span>TBD</span>
-                </div>
+         
                 <hr>
                 <div class="d-flex justify-content-between fw-bold">
                     <span>Total</span>
-                    <span>$@Model.Subtotal.ToString("0.00")</span>
+                    <span id="total">@((Model?.Subtotal ?? 0).ToString("N0")) ₫</span>
                 </div>
                 <hr>
                 <small class="text-muted d-block text-center mt-2">Need help? Call us at 1-877-707-6272</small>
             </div>
         </div>
+
+   
+
     </div>
 </div>
+<script>
+                function updateTotal() {
+        let subtotal = @((Model?.Subtotal ?? 0));
+        let discountSelect = document.getElementById("voucherSelect");
+        let selectedOption = discountSelect.options[discountSelect.selectedIndex];
+        let discountValue = parseFloat(selectedOption.getAttribute("data-discount"));
+        let discountType = selectedOption.getAttribute("data-type");
+        let maxDiscount = parseFloat(selectedOption.getAttribute("data-max")) || 0;
+
+        let discountAmount = 0;
+
+        if (discountType === "fixed") {
+            discountAmount = discountValue;
+        } else {
+            discountAmount = (subtotal * discountValue) / 100;
+            if (maxDiscount > 0) {
+                discountAmount = Math.min(discountAmount, maxDiscount);
+            }
+        }
+
+        let total = subtotal - discountAmount;
+        if (total < 0) total = 0;
+
+        document.getElementById("discount").innerText = discountAmount.toLocaleString() + " ₫";
+        document.getElementById("total").innerText = total.toLocaleString() + " ₫";
+        document.querySelector('input[name="Amount"]').value = total;
+                localStorage.setItem("selectedVoucherId", selectedOption.value);
+                        document.getElementById("selectedVoucherId").value = selectedOption.value;
+
+    }
+
+</script>
+<script>localStorage.removeItem("selectedVoucherId");</script>

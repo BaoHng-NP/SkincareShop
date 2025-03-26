@@ -11,7 +11,7 @@ namespace BusinessObjects.Models
         public double Amount { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
-        public string PaymentMethod { get; set; } // Thêm PaymentMethod
+        public string PaymentMethod { get; set; } 
     }
 
 }

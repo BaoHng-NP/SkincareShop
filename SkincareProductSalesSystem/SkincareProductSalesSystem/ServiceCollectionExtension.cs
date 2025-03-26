@@ -35,6 +35,9 @@ namespace FUNewsManagementSystem
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IVnPayService, VnPayService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IUserVourcherService, UserVourcherService>();
+
 
 
         }
