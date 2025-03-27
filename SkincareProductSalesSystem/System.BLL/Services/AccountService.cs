@@ -21,7 +21,7 @@ namespace System.BLL.Services
         }
         public async Task<IEnumerable<User>> GetAllAccountsAsync()
         {
-            return await _accountRepository.FindAll().ToListAsync();
+            return await _accountRepository.FindAll(null, u=>u.Role).ToListAsync();
         }
         public async Task<User?> GetAccountByIdAsync(int id)
         {

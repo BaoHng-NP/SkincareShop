@@ -35,5 +35,21 @@ namespace SkincareProductSalesSystem.Pages.Customer
             return Page();
         }
 
+        public async Task<IActionResult> OnPostCancelAsync(int id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Order not found!";
+                return Page();
+            }
+
+
+            order.Status = "Canceled";
+            await _orderService.UpdateOrderAsync(order);
+
+            TempData["SuccessMessage"] = "Order has been cancelled successfully!";
+            return RedirectToPage("/Customer/OrderHistory");
+        }
     }
 }

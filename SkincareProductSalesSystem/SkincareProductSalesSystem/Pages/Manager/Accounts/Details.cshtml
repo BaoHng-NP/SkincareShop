@@ -5,76 +5,77 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<style>
+    .details-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.FullName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.FullName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Phone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Phone)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.PasswordHash)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.PasswordHash)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Birthdate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Birthdate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.LoyaltyPoints)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.LoyaltyPoints)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.CreatedAt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.CreatedAt)
-        </dd>
- 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Role)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Role.RoleName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.SkinType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.SkinType.Name)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.User.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    .details-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .details-table {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .details-item {
+        width: 48%;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .details-actions {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+    }
+
+    .btn-edit {
+        background-color: #28a745;
+    }
+
+    .btn-back {
+        background-color: #007bff;
+    }
+</style>
+
+<div class="details-container">
+    <h1 class="details-header">User Details</h1>
+    <div class="details-table">
+        <div class="details-item"><strong>Full Name:</strong> <span>@Html.DisplayFor(model => model.User.FullName)</span></div>
+        <div class="details-item"><strong>Email:</strong> <span>@Html.DisplayFor(model => model.User.Email)</span></div>
+        <div class="details-item"><strong>Phone:</strong> <span>@Html.DisplayFor(model => model.User.Phone)</span></div>
+        <div class="details-item"><strong>Address:</strong> <span>@Html.DisplayFor(model => model.User.Address)</span></div>
+        <div class="details-item"><strong>Birthdate:</strong> <span>@Html.DisplayFor(model => model.User.Birthdate)</span></div>
+        <div class="details-item"><strong>Loyalty Points:</strong> <span>@Html.DisplayFor(model => model.User.LoyaltyPoints)</span></div>
+        <div class="details-item"><strong>Created At:</strong> <span>@Html.DisplayFor(model => model.User.CreatedAt)</span></div>
+        <div class="details-item"><strong>Role:</strong> <span>@Html.DisplayFor(model => model.User.Role.RoleName)</span></div>
+    </div>
+    <div class="details-actions">
+        <a asp-page="./Edit" asp-route-id="@Model.User.Id" class="btn btn-edit">Edit</a>
+        <a asp-page="./Index" class="btn btn-back">Back to List</a>
+    </div>
 </div>

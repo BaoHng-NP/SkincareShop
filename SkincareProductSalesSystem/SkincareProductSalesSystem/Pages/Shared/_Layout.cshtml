@@ -142,8 +142,12 @@
                             @if (User.IsInRole("Staff"))
                             {
                                 <li class="nav-item"><a class="nav-link" asp-page="/Staff/Orders/Index">Manage Orders</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Categories/Index">Manage Category</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Tags/Index">Manage Tag</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Products/Index">Manage Product</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Categories/Index">Manage Category</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Quiz/Index">Manage Quiz</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Vouchers/Index">Manage Vouchers</a></li>
+
+
                             }
                             @if (User.IsInRole("Customer"))
                             {

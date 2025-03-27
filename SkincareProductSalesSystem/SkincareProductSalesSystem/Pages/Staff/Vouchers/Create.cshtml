@@ -1,0 +1,64 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Vouchers.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Discount</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Discount.Code" class="control-label"></label>
+                <input asp-for="Discount.Code" class="form-control" />
+                <span asp-validation-for="Discount.Code" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.DiscountType" class="control-label"></label>
+                <input asp-for="Discount.DiscountType" class="form-control" />
+                <span asp-validation-for="Discount.DiscountType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.DiscountValue" class="control-label"></label>
+                <input asp-for="Discount.DiscountValue" class="form-control" />
+                <span asp-validation-for="Discount.DiscountValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.RequiredPoints" class="control-label"></label>
+                <input asp-for="Discount.RequiredPoints" class="form-control" />
+                <span asp-validation-for="Discount.RequiredPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.ExpirationDate" class="control-label"></label>
+                <input asp-for="Discount.ExpirationDate" class="form-control" />
+                <span asp-validation-for="Discount.ExpirationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.MinOrderValue" class="control-label"></label>
+                <input asp-for="Discount.MinOrderValue" class="form-control" />
+                <span asp-validation-for="Discount.MinOrderValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount.MaxDiscount" class="control-label"></label>
+                <input asp-for="Discount.MaxDiscount" class="form-control" />
+                <span asp-validation-for="Discount.MaxDiscount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

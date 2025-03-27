@@ -14,5 +14,6 @@ namespace System.BLL.Services
         Task AddFeedbackAsync(Feedback feedback);
         Task UpdateFeedbackAsync(Feedback feedback);
         Task DeleteFeedbackAsync(int id);
+        Task<List<Feedback>> GetFeedbackByProductIdAsync(int? id);
     }
 }

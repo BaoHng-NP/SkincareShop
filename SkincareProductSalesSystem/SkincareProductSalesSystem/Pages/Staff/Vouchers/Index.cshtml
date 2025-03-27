@@ -1,0 +1,78 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Vouchers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].DiscountType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].DiscountValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].RequiredPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].ExpirationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].MinOrderValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].MaxDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Discount[0].CreatedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Discount) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscountType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscountValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequiredPoints)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpirationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinOrderValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

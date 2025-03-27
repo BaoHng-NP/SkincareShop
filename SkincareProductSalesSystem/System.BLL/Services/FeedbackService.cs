@@ -43,7 +43,10 @@ namespace System.BLL.Services
             return await _repository.FindAll(o => o.UserId == id).ToListAsync();
         }
 
-
+        public async Task<List<Feedback>> GetFeedbackByProductIdAsync(int? id)
+        {
+            return await _repository.FindAll(o => o.ProductId == id, o=> o.User).ToListAsync();
+        }
         public Task UpdateFeedbackAsync(Feedback feedback)
         {
             throw new NotImplementedException();

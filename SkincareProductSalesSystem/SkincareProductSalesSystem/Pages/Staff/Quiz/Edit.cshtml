@@ -1,0 +1,45 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Quiz.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>SkinQuizAnswer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SkinQuizAnswer.Id" />
+            <div class="form-group">
+                <label asp-for="SkinQuizAnswer.QuestionId" class="control-label"></label>
+                <select asp-for="SkinQuizAnswer.QuestionId" class="form-control" asp-items="ViewBag.QuestionId"></select>
+                <span asp-validation-for="SkinQuizAnswer.QuestionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SkinQuizAnswer.Answer" class="control-label"></label>
+                <input asp-for="SkinQuizAnswer.Answer" class="form-control" />
+                <span asp-validation-for="SkinQuizAnswer.Answer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SkinQuizAnswer.SkinTypeId" class="control-label"></label>
+                <select asp-for="SkinQuizAnswer.SkinTypeId" class="form-control" asp-items="ViewBag.SkinTypeId"></select>
+                <span asp-validation-for="SkinQuizAnswer.SkinTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

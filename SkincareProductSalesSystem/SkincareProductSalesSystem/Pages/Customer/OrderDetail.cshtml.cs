@@ -14,14 +14,12 @@ namespace SkincareProductSalesSystem.Pages.Customer
     public class OrderDetailModel : PageModel
     {
         private readonly IOrderService _orderService;
-
         public OrderDetailModel(IOrderService orderService)
         {
             _orderService = orderService;
         }
 
         public Order Order { get; set; } = default!;
-         
         public async Task<IActionResult> OnGetAsync(int id)
         {
            

@@ -59,7 +59,7 @@
         </ol>
     </nav>
 
-    <div class="row mt-5">
+    <div class="row mt-5 mb-3">
         <div class="col-md-6 text-center">
             <div class="shadow-sm p-3 mb-4 bg-white rounded">
                 <img src="@Model.Product.ImageUrl" class="img-fluid product-image" alt="@Model.Product.Name">
@@ -97,9 +97,9 @@
 
             <div class="d-flex mt-2">
                 <h4 class="text-muted text-decoration-line-through me-3">
-                    @(Model.Product.Price * 2)
+                    @((Model.Product.Price * 2).ToString("N0")) ₫
                 </h4>
-                <h4 class="text-danger fw-bold">@Model.Product.Price</h4>
+                <h4 class="text-danger fw-bold">  @((Model.Product.Price).ToString("N0")) ₫</h4>
             </div>
 
             <p class="text-muted">@Model.Product.Description</p>
@@ -155,7 +155,59 @@
             </div>
         </div>
     </div>
+    @if (Model.Feedbacks != null && Model.Feedbacks.Any())
+    {
+        <hr />
+        <h3 class="mt-4 mb-3 text-center">Customer Reviews</h3>
+        <div class="list-group mt-2 mb-5" style="background-color: #F8F9FA">
+            @foreach (var item in Model.Feedbacks)
+            {
+                <div class="list-group-item p-3 border-bottom d-flex gap-3">
+                    <!-- Avatar mặc định (có thể thay bằng ảnh thật nếu có) -->
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                             style="width: 50px; height: 50px; font-size: 20px;">
+                            @item.User.FullName[0]
+                        </div>
+                    </div>
+
+                    <!-- Nội dung feedback -->
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-primary">@item.User.FullName</strong>
+                            <small class="text-muted">@item.CreatedAt</small>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= item.Rating)
+                                {
+                                    <span class="text-warning">&#9733;</span> @* Ngôi sao đầy (⭐) *@
+                                }
+                                else
+                                {
+                                    <span class="text-secondary">&#9734;</span> @* Ngôi sao rỗng (☆) *@
+                                }
+                            }
+                            <span class="text-muted">(@item.Rating)</span>
+                        </div>
+
+                        <p class="mt-2 text-secondary" style="font-size: 14px;">@item.Comment</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center mt-4">No Feedback Available</div>
+    }
+
+
 </div>
+
+
 
 <script>
         let quantity = 1; // Biến lưu số lượng
