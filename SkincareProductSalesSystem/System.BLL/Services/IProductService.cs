@@ -16,5 +16,6 @@ namespace System.BLL.Services
         Task DeleteProductAsync(int id);
         Task<IEnumerable<Product>> GetProductsByFilterAsync(int? categoryId, int? brandId);
         Task<IEnumerable<Product>> GetProductsBySkinTypeAsync(int skinTypeId);
+        Task<IEnumerable<Product>> GetAllProductsByCateIdAsync(int? cateId);
     }
 }

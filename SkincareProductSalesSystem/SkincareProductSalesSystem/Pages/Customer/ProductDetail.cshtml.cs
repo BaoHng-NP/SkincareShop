@@ -18,9 +18,12 @@ namespace SkincareProductSalesSystem.Pages.Customer
 
         public Product Product { get; set; }
         public IList<Feedback> Feedbacks { get; set; }
+        public IEnumerable<Product> CompareList { get; set; } = default!;
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Product = await _productService.GetProductByIdAsync(id);
+            CompareList = await _productService.GetAllProductsByCateIdAsync(cateId: Product.CategoryId);
             Feedbacks = await _feedbackService.GetFeedbackByProductIdAsync(id);
 
             if (Product == null)

@@ -1,0 +1,33 @@
+﻿@page "/compare"
+@model SkincareProductSalesSystem.Pages.Customer.CompareProductModel
+@{
+    ViewData["Title"] = "Compare Products";
+}
+
+<h2 class="text-center mt-4">Compare Products</h2>
+
+@if (Model.Product1 != null && Model.Product2 != null)
+{
+    <div class="row mt-5">
+        <div class="col-md-6 text-center">
+            <h4>@Model.Product1.Name</h4>
+            <img src="@Model.Product1.ImageUrl" class="img-fluid" style="width: 300px;" />
+            <p class="text-muted">@Model.Product1.Description</p>
+            <h5 class="text-danger">@Model.Product1.Price.ToString("N0") ₫</h5>
+        </div>
+
+        <div class="col-md-6 text-center">
+            <h4>@Model.Product2.Name</h4>
+            <img src="@Model.Product2.ImageUrl" class="img-fluid" style="width: 300px;" />
+            <p class="text-muted">@Model.Product2.Description</p>
+            <h5 class="text-danger">@Model.Product2.Price.ToString("N0") ₫</h5>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-center text-muted">Please select two products to compare.</p>
+}
+<script>
+    localStorage.removeItem("compareList");
+</script>

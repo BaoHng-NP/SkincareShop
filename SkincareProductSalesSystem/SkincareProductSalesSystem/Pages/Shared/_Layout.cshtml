@@ -136,7 +136,7 @@
                         {
                             @if (User.IsInRole("Manager"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-page="/SystemAccounts/Index">Manage Accounts</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Manager/Accounts/Index">Manage Accounts</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Manager/Dashboard/dashboard">Dashboard</a></li>
                             }
                             @if (User.IsInRole("Staff"))

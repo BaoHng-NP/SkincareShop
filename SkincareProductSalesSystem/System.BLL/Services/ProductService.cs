@@ -42,7 +42,10 @@ namespace System.BLL.Services
         {
             return await _repository.FindAll(null,u => u.Category, u => u.Brand).ToListAsync();
         }
-
+        public async Task<IEnumerable<Product>> GetAllProductsByCateIdAsync(int? cateId)
+        {
+            return await _repository.FindAll(u => u.CategoryId == cateId, u => u.Category, u => u.Brand).ToListAsync();
+        }
         public async Task<Product?> GetProductByIdAsync(int id)
         {
             return await _repository.FindById(id, u => u.Category, u => u.Brand);
