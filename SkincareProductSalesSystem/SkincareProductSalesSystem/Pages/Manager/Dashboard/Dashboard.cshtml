@@ -1,0 +1,339 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Manager.Dashboard.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    .stats-card {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .user-card {
+        background: linear-gradient(45deg, #4158D0, #C850C0);
+        color: white;
+    }
+
+    .revenue-card {
+        background: linear-gradient(45deg, #00B09B, #96C93D);
+        color: white;
+    }
+
+    .orders-card {
+        background: linear-gradient(45deg, #FF8008, #FFC837);
+        color: white;
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+
+    .stats-title {
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
+
+    .stats-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+    }
+
+    .product-card {
+        display: flex;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .smaller-chart {
+        max-height: 300px;
+    }
+</style>
+
+<div class="container py-4">
+    <h1 class="dashboard-title">
+        <i class="fas fa-chart-pie me-2"></i>Dashboard
+    </h1>
+
+    <!-- Stats Cards Row -->
+    <div class="row mb-4">
+        <!-- Total Users Card -->
+        <div class="col-md-4">
+            <div class="stats-card user-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="stats-title">Total Users</p>
+                        <h2 class="stats-value">@Model.TotalUsers</h2>
+                        <p class="mb-0">Active accounts</p>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="col-md-4">
+            <div class="stats-card revenue-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="stats-title">Total Revenue</p>
+                        <h2 class="stats-value">@String.Format("{0:n0}", Model.TotalRevenue) VNĐ</h2>
+                        <p class="mb-0">From completed orders</p>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status Card -->
+        <div class="col-md-4">
+            <div class="stats-card orders-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="stats-title">Completed Orders</p>
+                        <h2 class="stats-value">@Model.OrderCompletionRate.CompletedOrders</h2>
+                        <p class="mb-0">Success rate: @(Model.OrderCompletionRate.CompletedOrders > 0 ||
+                            Model.OrderCompletionRate.CanceledOrders > 0
+                            ? ((double)Model.OrderCompletionRate.CompletedOrders /
+                            (Model.OrderCompletionRate.CompletedOrders + Model.OrderCompletionRate.CanceledOrders) *
+                            100).ToString("F1") + "%"
+                            : "0%")</ p >
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Monthly Revenue Chart -->
+        <div class="col-md-8 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-chart-line me-2"></i>Monthly Revenue</h5>
+                <canvas id="revenueChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Order Completion Chart -->
+        <div class="col-md-4 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-chart-pie me-2"></i>Order Status</h5>
+                <canvas id="orderCompletionChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Selling Products List -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-trophy me-2"></i>Top Selling Products</h5>
+                <div class="top-products-list">
+                    @foreach (var product in Model.TopSellingProducts)
+                    {
+                        <div class="product-card">
+                            <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.jpg" : product.ImageUrl)"
+                                class="product-img">
+                            <div class="p-3 flex-grow-1">
+                                <h6 class="mb-1">@product.ProductName</h6>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">@String.Format("{0:n0}", product.Price) VNĐ</span>
+                                    <span class="badge bg-success">@product.TotalQuantity sold</span>
+                                </div>
+                                <small class="text-muted">Revenue: @String.Format("{0:n0}", product.TotalRevenue)
+                                    VNĐ</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- User Growth Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-user-plus me-2"></i>User Growth</h5>
+                <canvas id="userChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Statistics Bar Chart - Smaller Size -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2 mb-4">
+            <div class="chart-container smaller-chart">
+                <h5><i class="fas fa-shopping-cart me-2"></i>Monthly Orders</h5>
+                <canvas id="orderChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Format number to VND currency
+    function formatVND(value) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Monthly Orders Chart
+    var orderCtx = document.getElementById('orderChart').getContext('2d');
+    new Chart(orderCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.Time))),
+            datasets: [{
+                label: 'Number of Orders',
+                data: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.TotalOrders))),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Order Statistics'
+                }
+            }
+        }
+    });
+
+    // Order Completion Chart
+    var orderCompletionCtx = document.getElementById('orderCompletionChart').getContext('2d');
+    new Chart(orderCompletionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'Canceled'],
+            datasets: [{
+                data: [@Model.OrderCompletionRate.CompletedOrders, @Model.OrderCompletionRate.CanceledOrders],
+                backgroundColor: ['#4CAF50', '#F44336'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    // User Statistics Chart
+    var userCtx = document.getElementById('userChart').getContext('2d');
+    new Chart(userCtx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => "Month " + u.Month))),
+            datasets: [{
+                label: 'New Users',
+                data: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.TotalUsers))),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+
+    // Monthly Revenue Chart
+    var revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Period))),
+            datasets: [{
+                label: 'Revenue (VNĐ)',
+                data: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Revenue))),
+                backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Revenue from Completed Orders'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return formatVND(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

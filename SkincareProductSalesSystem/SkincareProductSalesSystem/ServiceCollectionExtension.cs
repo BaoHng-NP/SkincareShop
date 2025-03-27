@@ -37,6 +37,12 @@ namespace FUNewsManagementSystem
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IUserVourcherService, UserVourcherService>();
+            services.AddScoped<DashboardService>();
+            services.AddScoped<DashboardRepository>();
+            services.AddScoped<IContentService, ContentService>();
+            services.AddScoped<IContentRepository, ContentRepository>();
+
+
 
 
 

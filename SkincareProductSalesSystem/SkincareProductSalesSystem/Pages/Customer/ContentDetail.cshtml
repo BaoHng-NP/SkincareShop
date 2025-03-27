@@ -1,0 +1,351 @@
+@page "{id:int}"
+@model SkincareProductSalesSystem.Pages.Customer.ContentDetailModel
+@{
+    ViewData["Title"] = Model.BlogPost?.Title;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .blog-post-header {
+        background-size: cover;
+        background-position: center;
+        height: 400px;
+        position: relative;
+        margin-bottom: 2rem;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .blog-post-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+    }
+    
+    .blog-post-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .blog-post-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .blog-author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+    
+    .blog-author-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .blog-post-date {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+    
+    .blog-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+    
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+    
+    .blog-sidebar {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .sidebar-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #FFB6C1;
+    }
+    
+    .related-post {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .related-post:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .related-post-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    
+    .related-post-content {
+        flex-grow: 1;
+        padding-left: 1rem;
+    }
+    
+    .related-post-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.35rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .related-post-date {
+        font-size: 0.8rem;
+        color: #777;
+    }
+    
+    .back-to-blogs {
+        background-color: #FFB6C1;
+        border-color: #FFB6C1;
+        color: white;
+    }
+    
+    .back-to-blogs:hover {
+        background-color: #FF99B0;
+        border-color: #FF99B0;
+        color: white;
+    }
+
+    .article-tag {
+        background-color: #FFE4E1;
+        color: #FF6088;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .social-share-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .social-share-btn:hover {
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    .fb-share {
+        background-color: #3b5998;
+    }
+
+    .twitter-share {
+        background-color: #1DA1F2;
+    }
+
+    .pinterest-share {
+        background-color: #E60023;
+    }
+
+    .whatsapp-share {
+        background-color: #25D366;
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- Back button -->
+    <div class="mb-4">
+        <a asp-page="Content" class="btn back-to-blogs">
+            <i class="fas fa-arrow-left me-2"></i>Back to All Blogs
+        </a>
+    </div>
+    
+    @if (Model.BlogPost != null)
+    {
+        <!-- Blog header with image background -->
+        <div class="blog-post-header" style="background-image: url('@(string.IsNullOrEmpty(Model.BlogPost.ImageUrl) ? "/images/blog-placeholder.jpg" : Model.BlogPost.ImageUrl)')">
+            <div class="blog-post-overlay">
+                <h1 class="blog-post-title">@Model.BlogPost.Title</h1>
+                <div class="blog-post-meta">
+                    <img src="/images/user-placeholder.jpg" class="blog-author-avatar" alt="Author">
+                    <div>
+                        <div class="blog-author-name">@Model.BlogPost.Author?.FullName</div>
+                        <div class="blog-post-date">
+                            <i class="far fa-calendar"></i> @Model.BlogPost.PublishedAt?.ToString("MMMM dd, yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Main content -->
+            <div class="col-lg-8">
+                <!-- Content Type/Category tags -->
+                <div class="mb-4">
+                    @if (!string.IsNullOrEmpty(Model.BlogPost.ContentType))
+                    {
+                        <span class="article-tag">
+                            <i class="fas fa-tag me-1"></i> @Model.BlogPost.ContentType
+                        </span>
+                    }
+                    <span class="article-tag">
+                        <i class="fas fa-book-open me-1"></i> Blog
+                    </span>
+                </div>
+
+                <!-- Main article content -->
+                <article class="blog-content">
+                    @Html.Raw(Model.BlogPost.Content1)
+                </article>
+                
+                <!-- Social sharing buttons -->
+                <div class="mb-5">
+                    <h5 class="mb-3">Share this article:</h5>
+                    <a href="javascript:void(0);" class="social-share-btn fb-share">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="social-share-btn twitter-share">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="social-share-btn pinterest-share">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="social-share-btn whatsapp-share">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+
+                <!-- Published date info -->
+                <div class="alert alert-light mb-4">
+                    <small>
+                        <i class="fas fa-info-circle me-2"></i>
+                        This article was published on @Model.BlogPost.PublishedAt?.ToString("MMMM dd, yyyy") and last updated on @(Model.BlogPost.CreatedAt?.ToString("MMMM dd, yyyy"))
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Author info -->
+                <div class="blog-sidebar">
+                    <h4 class="sidebar-title">About the Author</h4>
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="/images/user-placeholder.jpg" class="blog-author-avatar" alt="Author">
+                        <div class="ms-3">
+                            <h5 class="mb-1">@Model.BlogPost.Author?.FullName</h5>
+                            <p class="mb-0 text-muted">Skincare Specialist</p>
+                        </div>
+                    </div>
+                    <p>Our skincare specialists are dedicated to providing you with expert advice and recommendations for achieving healthy, glowing skin.</p>
+                </div>
+                
+                <!-- Related articles -->
+                <div class="blog-sidebar">
+                    <h4 class="sidebar-title">Related Articles</h4>
+                    @if (Model.RelatedPosts != null && Model.RelatedPosts.Any())
+                    {
+                        @foreach (var post in Model.RelatedPosts.Where(p => p.Id != Model.BlogPost.Id).Take(3))
+                        {
+                            <div class="related-post">
+                                <img src="@(string.IsNullOrEmpty(post.ImageUrl) ? "/images/blog-placeholder.jpg" : post.ImageUrl)" 
+                                     class="related-post-img" alt="@post.Title">
+                                <div class="related-post-content">
+                                    <h6 class="related-post-title">
+                                        <a asp-page="ContentDetail" asp-route-id="@post.Id" class="text-decoration-none text-dark">
+                                            @post.Title
+                                        </a>
+                                    </h6>
+                                    <p class="related-post-date">
+                                        <i class="far fa-calendar-alt"></i> @post.PublishedAt?.ToString("MMM dd, yyyy")
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No related articles available.</p>
+                    }
+                </div>
+                
+                <!-- Newsletter subscription -->
+                <div class="blog-sidebar">
+                    <h4 class="sidebar-title">Subscribe to Our Newsletter</h4>
+                    <p>Get the latest skincare tips and product recommendations directly to your inbox!</p>
+                    <form>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email Address">
+                        </div>
+                        <button type="submit" class="btn back-to-blogs w-100">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- More articles section -->
+        <div class="mt-5">
+            <h3 class="mb-4">More Articles You Might Like</h3>
+            <div class="row">
+                @foreach (var post in Model.RelatedPosts.Take(3))
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="@(string.IsNullOrEmpty(post.ImageUrl) ? "/images/blog-placeholder.jpg" : post.ImageUrl)" 
+                                 class="card-img-top" style="height: 180px; object-fit: cover;" alt="@post.Title">
+                            <div class="card-body">
+                                <h5 class="card-title" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @post.Title
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <small><i class="far fa-calendar-alt me-1"></i> @post.PublishedAt?.ToString("MMM dd, yyyy")</small>
+                                </p>
+                                <a asp-page="ContentDetail" asp-route-id="@post.Id" class="btn btn-sm back-to-blogs">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h3>Blog post not found</h3>
+            <p>The blog post you're looking for doesn't exist or has been removed.</p>
+            <a asp-page="Content" class="btn back-to-blogs mt-3">Browse All Blog Posts</a>
+        </div>
+    }
+</div>
