@@ -137,7 +137,7 @@
                             @if (User.IsInRole("Manager"))
                             {
                                 <li class="nav-item"><a class="nav-link" asp-page="/SystemAccounts/Index">Manage Accounts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Reports/Index">Reports</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Manager/Dashboard/dashboard">Dashboard</a></li>
                             }
                             @if (User.IsInRole("Staff"))
                             {
@@ -155,6 +155,8 @@
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/store">Store</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/about">About</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/contact">Contact</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/content">News</a></li>
+
                                 <li class="nav-item"><a class="nav-link" asp-page="/Customer/skintest">Skin Quiz</a></li>
                                 @if (skinTypeId.HasValue && skinTypeId > 0)
                                 {

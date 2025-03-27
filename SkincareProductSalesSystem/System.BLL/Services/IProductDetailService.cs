@@ -9,8 +9,8 @@ namespace System.BLL.Services
 {
     public interface IProductDetailService
     {
-  
-        Task<Product?> GetPoductDetailByIdAsync(int id);
-   
+
+        Task<IList<ProductDetail>> GetPoductDetailServiceByIdAsync(int id);
+        Task AddPoductDetailServiceAsync(ProductDetail userVoucher);
     }
 }

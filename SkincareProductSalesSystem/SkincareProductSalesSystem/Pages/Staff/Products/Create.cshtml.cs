@@ -7,29 +7,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BusinessObjects.Models;
 using System.DAL;
+using System.BLL.Services;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
     public class CreateModel : PageModel
     {
-        private readonly System.DAL.SkincareShopContext _context;
-
-        public CreateModel(System.DAL.SkincareShopContext context)
+        private readonly IProductService _productService;
+        private readonly IBrandService _brandService;
+        private readonly ICategoryService _categoryService;
+        public CreateModel(IProductService productService, IBrandService brandService, ICategoryService categoryService)
         {
-            _context = context;
+            _productService = productService;
+            _brandService = brandService;
+            _categoryService = categoryService;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-        ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName");
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            var brand = await _brandService.GetAllActiveBrandAsync();
+            var category = await _categoryService.GetAllActiveCategoryAsync();
+
+            ViewData["BrandId"] = new SelectList(brand.ToList(), "Id", "BrandName");
+            ViewData["CategoryId"] = new SelectList(category.ToList(), "Id", "Name");
+
             return Page();
         }
+
 
         [BindProperty]
         public Product Product { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -37,8 +45,7 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
                 return Page();
             }
 
-            _context.Products.Add(Product);
-            await _context.SaveChangesAsync();
+            await _productService.AddProductAsync(Product);
 
             return RedirectToPage("./Index");
         }

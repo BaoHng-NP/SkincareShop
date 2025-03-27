@@ -1,0 +1,55 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Products.AddModel
+
+@{
+    ViewData["Title"] = "Add Product Detail";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Add Product Detail</h2>
+
+    <div class="card shadow-lg p-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post">
+                    <input type="hidden" asp-for="ProductId" />
+
+                    <div class="form-group">
+                        <label class="form-label fw-bold">Product</label>
+                        <input type="text" class="form-control" value="@Model.Product.Name" readonly />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ProductDetail.ManufactureDate" class="form-label fw-bold"></label>
+                        <input asp-for="ProductDetail.ManufactureDate" type="date" class="form-control" />
+                        <span asp-validation-for="ProductDetail.ManufactureDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ProductDetail.ExpiryDate" class="form-label fw-bold"></label>
+                        <input asp-for="ProductDetail.ExpiryDate" type="date" class="form-control" />
+                        <span asp-validation-for="ProductDetail.ExpiryDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ProductDetail.Quantity" class="form-label fw-bold"></label>
+                        <input asp-for="ProductDetail.Quantity" class="form-control" placeholder="Enter quantity" />
+                        <span asp-validation-for="ProductDetail.Quantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

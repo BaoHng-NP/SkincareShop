@@ -2,74 +2,87 @@
 @model SkincareProductSalesSystem.Pages.Staff.Products.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Product";
 }
 
-<h1>Edit</h1>
-
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 500px;">
+        <h2 class="text-center text-primary">Edit Product</h2>
+        <hr />
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Product.Id" />
-            <div class="form-group">
-                <label asp-for="Product.CategoryId" class="control-label"></label>
-                <select asp-for="Product.CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+            <input type="hidden" asp-for="Product.Stock" />
+            <input type="hidden" asp-for="Product.Rating" />
+            <input type="hidden" asp-for="Product.CreatedAt" />
+
+            <div class="mb-3">
+                <label asp-for="Product.CategoryId" class="form-label">Category</label>
+                <select asp-for="Product.CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                    <option value="">-- Select Category --</option>
+                </select>
                 <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.BrandId" class="control-label"></label>
-                <select asp-for="Product.BrandId" class="form-control" asp-items="ViewBag.BrandId"></select>
+
+            <div class="mb-3">
+                <label asp-for="Product.BrandId" class="form-label">Brand</label>
+                <select asp-for="Product.BrandId" class="form-select" asp-items="ViewBag.BrandId">
+                    <option value="">-- Select Brand --</option>
+                </select>
                 <span asp-validation-for="Product.BrandId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.Name" class="control-label"></label>
-                <input asp-for="Product.Name" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="Product.Name" class="form-label">Product Name</label>
+                <input asp-for="Product.Name" class="form-control" placeholder="Enter product name" />
                 <span asp-validation-for="Product.Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.Description" class="control-label"></label>
-                <input asp-for="Product.Description" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="Product.Description" class="form-label">Description</label>
+                <textarea asp-for="Product.Description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
                 <span asp-validation-for="Product.Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.Price" class="control-label"></label>
-                <input asp-for="Product.Price" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="Product.Price" class="form-label">Price (VNĐ)</label>
+                <input asp-for="Product.Price" class="form-control" type="number" step="0.01" placeholder="Enter price" />
                 <span asp-validation-for="Product.Price" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.Stock" class="control-label"></label>
-                <input asp-for="Product.Stock" class="form-control" />
-                <span asp-validation-for="Product.Stock" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Product.Rating" class="control-label"></label>
-                <input asp-for="Product.Rating" class="form-control" />
-                <span asp-validation-for="Product.Rating" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Product.ImageUrl" class="control-label"></label>
-                <input asp-for="Product.ImageUrl" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="Product.ImageUrl" class="form-label">Image URL</label>
+                <input asp-for="Product.ImageUrl" class="form-control" placeholder="Paste image URL" id="imageUrlInput" oninput="updateImagePreview()" />
                 <span asp-validation-for="Product.ImageUrl" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.CreatedAt" class="control-label"></label>
-                <input asp-for="Product.CreatedAt" class="form-control" />
-                <span asp-validation-for="Product.CreatedAt" class="text-danger"></span>
+
+            <div class="text-center">
+                <img id="imagePreview" src="@Model.Product.ImageUrl" alt="Product Image" class="img-thumbnail" style="max-width: 100px; max-height: 100px; display: @(string.IsNullOrEmpty(Model.Product.ImageUrl) ? "none" : "block");" />
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success w-100">Save Changes</button>
+                <a asp-page="Index" class="btn btn-secondary w-100 mt-2">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function updateImagePreview() {
+            let imageUrl = document.getElementById("imageUrlInput").value;
+            let imagePreview = document.getElementById("imagePreview");
+
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+                imagePreview.style.display = "block";
+            } else {
+                imagePreview.style.display = "none";
+            }
+        }
+    </script>
 }

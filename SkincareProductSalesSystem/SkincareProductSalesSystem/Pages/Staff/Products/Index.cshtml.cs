@@ -13,6 +13,18 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
     public class IndexModel : PageModel
     {
-       
+        private readonly IProductService _productService;
+
+        public IndexModel(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public IEnumerable<Product> Product { get; set; } = default!;
+
+        public async Task OnGetAsync()
+        {
+            Product = await _productService.GetAllProductsAsync();
+        }
     }
 }

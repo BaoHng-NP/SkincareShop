@@ -7,28 +7,31 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
 using System.DAL;
+using System.BLL.Services;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
     public class DetailsModel : PageModel
     {
-        private readonly System.DAL.SkincareShopContext _context;
-
-        public DetailsModel(System.DAL.SkincareShopContext context)
+        private readonly IProductService _productService;
+        private readonly IProductDetailService _productDetailService;
+        public DetailsModel(IProductService productService, IProductDetailService productDetailService)
         {
-            _context = context;
+            _productService = productService;
+            _productDetailService = productDetailService;
         }
 
         public Product Product { get; set; } = default!;
-
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IList<ProductDetail> Detail { get; set; }
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productService.GetProductByIdAsync(id);
+            Detail = await _productDetailService.GetPoductDetailServiceByIdAsync(id);
             if (product == null)
             {
                 return NotFound();

@@ -8,36 +8,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
 using System.DAL;
+using System.BLL.Services;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
     public class EditModel : PageModel
     {
-        private readonly System.DAL.SkincareShopContext _context;
-
-        public EditModel(System.DAL.SkincareShopContext context)
+        private readonly IProductService _productService;
+        private readonly IBrandService _brandService;
+        private readonly ICategoryService _categoryService;
+        public EditModel(IProductService productService, IBrandService brandService, ICategoryService categoryService)
         {
-            _context = context;
+            _productService = productService;
+            _brandService = brandService;
+            _categoryService = categoryService;
         }
-
         [BindProperty]
         public Product Product { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product =  await _context.Products.FirstOrDefaultAsync(m => m.Id == id);
+            var product =  await _productService.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
             Product = product;
-           ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName");
-           ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            var brand = await _brandService.GetAllActiveBrandAsync();
+            var category = await _categoryService.GetAllActiveCategoryAsync();
+
+            ViewData["BrandId"] = new SelectList(brand.ToList(), "Id", "BrandName");
+            ViewData["CategoryId"] = new SelectList(category.ToList(), "Id", "Name");
+
             return Page();
         }
 
@@ -45,35 +52,10 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Attach(Product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(Product.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _productService.UpdateProductAsync(Product);
 
             return RedirectToPage("./Index");
         }
 
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
-        }
     }
 }
