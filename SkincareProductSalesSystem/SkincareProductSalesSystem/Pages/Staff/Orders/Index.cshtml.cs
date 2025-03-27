@@ -9,6 +9,8 @@ using BusinessObjects.Models;
 using System.DAL;
 using System.BLL.Services;
 using System.Security.Claims;
+using FUNewsManagementSystem.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Orders
 {
@@ -16,10 +18,13 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
     {
         private readonly IOrderService _orderService;
         private readonly IAccountService _accountService;
-        public IndexModel(IOrderService orderService, IAccountService accountService)
+        private readonly IHubContext<SignalrServer> _hubContext;
+
+        public IndexModel(IOrderService orderService, IAccountService accountService, IHubContext<SignalrServer> hubContext)
         {
             _orderService = orderService;
             _accountService = accountService;
+            _hubContext = hubContext;
         }
 
         public IEnumerable<Order> Order { get; set; } = default!;
@@ -69,6 +74,8 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
                 return Page();
             }
             await _orderService.UpdateOrderAsync(order);
+            await _hubContext.Clients.All.SendAsync("LoadAllOrder");
+
             Order = await _orderService.GetAllOrdersAsync();
             return RedirectToPage();
         }

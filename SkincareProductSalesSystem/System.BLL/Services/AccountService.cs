@@ -25,7 +25,7 @@ namespace System.BLL.Services
         }
         public async Task<User?> GetAccountByIdAsync(int id)
         {
-            return await _accountRepository.FindById(id, u => u.Role);
+            return await _accountRepository.FindById(id, u => u.Role,u => u.SkinType);
         }
         public async Task AddAccountAsync(User user)
         {

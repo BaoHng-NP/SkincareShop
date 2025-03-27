@@ -23,7 +23,7 @@ namespace SkincareProductSalesSystem.Pages.Customer
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Product = await _productService.GetProductByIdAsync(id);
-            CompareList = await _productService.GetAllProductsByCateIdAsync(cateId: Product.CategoryId);
+            CompareList = await _productService.GetAllProductsByCateIdAsync(cateId: Product.CategoryId, Product.Id);
             Feedbacks = await _feedbackService.GetFeedbackByProductIdAsync(id);
 
             if (Product == null)

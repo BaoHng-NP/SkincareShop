@@ -3,31 +3,213 @@
 @{
     ViewData["Title"] = "Compare Products";
 }
+<style>
+    table {
+        border: 2px solid #FF99B0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-<h2 class="text-center mt-4">Compare Products</h2>
+    th {
+        background-color: #FF99B0;
+        color: white;
+    }
+
+    td {
+        padding: 15px;
+    }
+
+    .text-danger {
+        font-size: 20px;
+    }
+
+    .recommendation {
+        color: green;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .toast-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #00AC46;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease-in-out;
+    }
+
+</style>
+
+<h2 class="text-center mt-3">Similar Products</h2>
 
 @if (Model.Product1 != null && Model.Product2 != null)
 {
-    <div class="row mt-5">
-        <div class="col-md-6 text-center">
-            <h4>@Model.Product1.Name</h4>
-            <img src="@Model.Product1.ImageUrl" class="img-fluid" style="width: 300px;" />
-            <p class="text-muted">@Model.Product1.Description</p>
-            <h5 class="text-danger">@Model.Product1.Price.ToString("N0") ₫</h5>
+    <div class="container mt-4">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Feature</th>
+                    <th>@Model.Product1.Name</th>
+                    <th>@Model.Product2.Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Image</strong></td>
+                    <td>
+                        <img src="@Model.Product1.ImageUrl" class="img-fluid" style="width: 150px;" />
+                        @if (Model.Product1.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                        {
+                            <p class="recommendation">✔️ Recommended for your skin type</p>
+                        }
+                    </td>
+                    <td>
+                        <img src="@Model.Product2.ImageUrl" class="img-fluid" style="width: 150px;" />
+                        @if (Model.Product2.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                        {
+                            <p class="recommendation">✔️ Recommended for your skin type</p>
+                        }
+                    
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Description</strong></td>
+                    <td>@Model.Product1.Description</td>
+                    <td>@Model.Product2.Description</td>
+                </tr>
+                <tr>
+                    <td><strong>Rating</strong></td>
+                    <td>@Model.Product1.Rating ⭐</td>
+                    <td>@Model.Product2.Rating ⭐</td>
+                </tr>
+                <tr>
+                    <td><strong>Skin Types</strong></td>
+                    <td>@string.Join(", ", Model.Product1.SkinTypes.Select(st => st.Name))</td>
+                    <td>@string.Join(", ", Model.Product2.SkinTypes.Select(st => st.Name))</td>
+                </tr>
+                <tr>
+                    <td><strong>Skin Type Description</strong></td>
+                    <td>@string.Join(", ", Model.Product1.SkinTypes.Select(st => st.Description))</td>
+                    <td>@string.Join(", ", Model.Product2.SkinTypes.Select(st => st.Description))</td>
+                </tr>
+                <tr>
+                    <td><strong>Price</strong></td>
+                    <td class="text-danger"><strong>@Model.Product1.Price.ToString("N0") ₫</strong></td>
+                    <td class="text-danger"><strong>@Model.Product2.Price.ToString("N0") ₫</strong></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn add-to-cart-btn"
+                                data-id="@Model.Product1.Id"
+                                data-name="@Model.Product1.Name"
+                                data-price="@Model.Product1.Price"
+                                data-image="@Model.Product1.ImageUrl"
+                                onclick="handleAddToCart(this)">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn add-to-cart-btn"
+                                data-id="@Model.Product2.Id"
+                                data-name="@Model.Product2.Name"
+                                data-price="@Model.Product2.Price"
+                                data-image="@Model.Product2.ImageUrl"
+                                onclick="handleAddToCart(this)">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <button class="btn btn-secondary" onclick="window.history.back();">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+
+            <a href="/Store" class="btn" style="background-color:#ff99b0; color:white">
+                <i class="bi bi-cart"></i> Continue Shopping
+            </a>
         </div>
 
-        <div class="col-md-6 text-center">
-            <h4>@Model.Product2.Name</h4>
-            <img src="@Model.Product2.ImageUrl" class="img-fluid" style="width: 300px;" />
-            <p class="text-muted">@Model.Product2.Description</p>
-            <h5 class="text-danger">@Model.Product2.Price.ToString("N0") ₫</h5>
-        </div>
     </div>
 }
 else
 {
     <p class="text-center text-muted">Please select two products to compare.</p>
 }
+
+<script>
+        function handleAddToCart(button) {
+        const productId = button.getAttribute("data-id");
+        const productName = button.getAttribute("data-name");
+        const price = button.getAttribute("data-price");
+        const imageUrl = button.getAttribute("data-image");
+
+        addToCart(productId, productName, price, imageUrl);
+    }
+
+               function addToCart(productId, productName, price, imageUrl) {
+        const product = {
+            productId: parseInt(productId),
+            productName: productName,
+            price: parseFloat(price),
+            imageUrl: imageUrl,
+            quantity : 1
+        };
+
+        fetch("/store?handler=AddToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(product)
+        })
+        .then(async response => {
+            const text = await response.text();
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return JSON.parse(text);
+            } else {
+                throw new Error("Expected JSON response, but got HTML or other content");
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                // Hiển thị thông báo thành công
+                showToast(`🛒 Added to cart! Cart items: ${data.cartCount}`);
+            } else {
+                alert("❌ Failed to add to cart: " + data.message);
+            }
+        })
+        .catch(error => console.error("❌ Fetch error:", error));
+    }
+
+    // Hàm hiển thị thông báo dạng toast
+    function showToast(message) {
+        let toast = document.createElement("div");
+        toast.className = "toast-message";
+        toast.innerText = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => document.body.removeChild(toast), 500);
+        }, 3000);
+    }
+
+</script>
 <script>
     localStorage.removeItem("compareList");
 </script>

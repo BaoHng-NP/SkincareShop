@@ -22,7 +22,7 @@
         }
 
     .breadcrumb-item.active {
-        color: #3f483d !important;
+        color: #FF99B0 !important;
         font-weight: bold;
     }
 
@@ -130,6 +130,28 @@
         .add-to-cart-btn:hover {
             background-color: var(--secondary-color);
         }
+
+    .section-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-pink), var(--dark-pink));
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
 </style>
 <div class="container-fluid mt-3" style="padding: 0 100px">
     <!-- Breadcrumb -->
@@ -200,12 +222,12 @@
 
 
 
-            <button class="btn btn-dark mt-3"
+            <button class="btn mt-3"
                     data-id="@Model.Product.Id"
                     data-name="@Model.Product.Name"
                     data-price="@Model.Product.Price"
                     data-image="@Model.Product.ImageUrl"
-                    onclick="handleAddToCart(this)">
+                    onclick="handleAddToCart(this)" style="background-color: #FF99B0; color:white">
                 <i class="bi bi-cart-plus"></i> Add to Cart
             </button>
             <hr>
@@ -237,11 +259,13 @@
             </div>
         </div>
     </div>
+    <h2 class="section-title mt-3">💬 Customer Reviews</h2>
 
     @if (Model.Feedbacks != null && Model.Feedbacks.Any())
     {
         <div class="feedback-container mt-4">
-            <h3 class="text-center text-primary">💬 Customer Reviews</h3>
+
+            <h3 class="text-center text-primary"></h3>
             @foreach (var item in Model.Feedbacks)
             {
                 <div class="feedback-item">
@@ -280,6 +304,7 @@
     {
         <div class="alert alert-info text-center mt-4">No Feedback Available</div>
     }
+    <h2 class="section-title mt-3">Similar Products</h2>
 
     <div class="row mt-4">
         @if (Model.CompareList != null)
@@ -290,18 +315,24 @@
                     <div class="product-card">
                         <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid">
                         <h5 class="mt-2 text-center">
-                            <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="text-decoration-none text-dark">@product.Name</a>
+                            @product.Name
                         </h5>
                         <p class="text-muted text-center">@product.Description</p>
                         <div class="d-flex justify-content-center align-items-center gap-2">
                             <span class="text-decoration-line-through text-muted">@((product.Price * 2).ToString("N0")) ₫</span>
                             <span class="product-price">@product.Price.ToString("N0") ₫</span>
                         </div>
-                        <button class="btn btn-outline-primary mt-3"
-                                data-id="@product.Id"
-                                onclick="handleAddToCompare(this)">
-                            <i class="bi bi-columns"></i> Compare
-                        </button>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="btn btn-outline-primary"
+                                    style="border-color: #FF99B0; color: #FF99B0; transition: 0.3s;"
+                                    data-id="@product.Id"
+                                    onclick="handleAddToCompare(this)"
+                                    onmouseover="this.style.backgroundColor='#FF99B0'; this.style.color='white';"
+                                    onmouseout="this.style.backgroundColor='white'; this.style.color='#FF99B0';">
+                                <i class="bi bi-columns"></i> Compare
+                            </button>
+                        </div>
+
 
                     </div>
                 </div>

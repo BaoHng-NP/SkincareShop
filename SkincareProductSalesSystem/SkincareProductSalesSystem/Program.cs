@@ -1,9 +1,11 @@
 using FUNewsManagementSystem;
+using FUNewsManagementSystem.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddAuthen();
 builder.Services.AddHttpContextAccessor();
@@ -37,6 +39,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+app.MapHub<SignalrServer>("/signalRServer");
 app.MapRazorPages();
 
 app.Run();

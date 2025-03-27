@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BusinessObjects.Models;
 using System.BLL.Services;
+using FUNewsManagementSystem.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
@@ -14,11 +16,13 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
     {
         private readonly IProductDetailService _productDetailService;
         private readonly IProductService _productService;
+        private readonly IHubContext<SignalrServer> _hubContext;
 
-        public AddModel(IProductDetailService productDetailService, IProductService productService)
+        public AddModel(IProductDetailService productDetailService, IProductService productService, IHubContext<SignalrServer> hubContext)
         {
             _productDetailService = productDetailService;
             _productService = productService;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -67,8 +71,10 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
             // Lưu vào database
             await _productDetailService.AddPoductDetailServiceAsync(ProductDetail);
             await _productService.UpdateProductAsync(product);
+            await _hubContext.Clients.All.SendAsync("LoadAllStore");
 
             return RedirectToPage("./Index");
         }
+   
     }
 }

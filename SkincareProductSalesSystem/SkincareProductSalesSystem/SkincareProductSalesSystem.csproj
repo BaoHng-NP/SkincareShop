@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Hubs\SignalrServer.cs" />
+  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />

@@ -68,11 +68,11 @@
         }
 
             .product-name:hover {
-                color: #616e5e;
+            color: #FF99B0;
             }
 
         .add-to-cart-btn {
-            background-color: #4a5548;
+        background-color: #FF99B0;
             color: white;
             border: none;
             position: absolute;
@@ -104,7 +104,7 @@
             }
 
         .breadcrumb-item.active {
-            color: #3f483d !important;
+        color: #FF99B0 !important;
             font-weight: bold;
         }
 
@@ -174,7 +174,7 @@
                         <p>No brands available.</p>
                     }
                     <hr>
-                    <button class="btn btn-dark" onclick="applyFilter()">Apply Filter</button>
+                <button class="btn" style="background-color:#FF99B0; color:white" onclick="applyFilter()">Apply Filter</button>
                 </div>
             </div>
 
@@ -346,3 +346,5 @@
         localStorage.removeItem("compareList");
 
 </script>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/site.js"></script>

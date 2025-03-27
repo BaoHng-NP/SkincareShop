@@ -42,13 +42,18 @@ namespace System.BLL.Services
         {
             return await _repository.FindAll(null,u => u.Category, u => u.Brand).ToListAsync();
         }
-        public async Task<IEnumerable<Product>> GetAllProductsByCateIdAsync(int? cateId)
+        public async Task<IEnumerable<Product>> GetAllProductsByCateIdAsync(int? cateId, int excludeProductId)
         {
-            return await _repository.FindAll(u => u.CategoryId == cateId, u => u.Category, u => u.Brand).ToListAsync();
+            return await _repository.FindAll(
+                u => u.CategoryId == cateId && u.Id != excludeProductId,
+                u => u.Category,
+                u => u.Brand
+            ).ToListAsync();
         }
+
         public async Task<Product?> GetProductByIdAsync(int id)
         {
-            return await _repository.FindById(id, u => u.Category, u => u.Brand);
+            return await _repository.FindById(id, u => u.Category, u => u.Brand, u => u.SkinTypes);
         }
 
         public async Task UpdateProductAsync(Product product)

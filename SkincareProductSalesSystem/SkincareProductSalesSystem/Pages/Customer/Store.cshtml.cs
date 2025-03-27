@@ -9,6 +9,8 @@ using BusinessObjects.Models;
 using System.DAL;
 using System.BLL.Services;
 using SkincareProductSalesSystem.Helpers;
+using Microsoft.AspNetCore.SignalR;
+using FUNewsManagementSystem.Hubs;
 
 namespace SkincareProductSalesSystem.Pages.Customer
 {
@@ -17,6 +19,7 @@ namespace SkincareProductSalesSystem.Pages.Customer
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IBrandService _brandService;
+
         public StoreModel(IProductService productService, ICategoryService categoryService, IBrandService brandService)
         {
             _productService = productService;
