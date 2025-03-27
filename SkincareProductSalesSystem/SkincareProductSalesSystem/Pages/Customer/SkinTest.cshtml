@@ -2,95 +2,254 @@
 @model SkincareProductSalesSystem.Pages.Customer.SkinTestModel
 
 <style>
-    /* Ảnh nền toàn màn hình */
-    /* Ảnh nền */
-    .background-container {
-        position: absolute; /* Thay vì fixed */
-        width: 100%;
-        min-height: 100vh; /* Đảm bảo ảnh nền mở rộng theo nội dung */
-        background: url('https://png.pngtree.com/background/20210710/original/pngtree-summer-beauty-skin-care-club-mobile-phone-poster-picture-image_1019876.jpg') center/cover no-repeat;
+    :root {
+        --primary-color: #4a5548;
+        --secondary-color: #FF99B0;
+        --light-color: #FFF9FA;
+        --text-dark: #333333;
+        --text-light: #6c757d;
     }
 
-    /* Lớp phủ đen */
-    .background-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        min-height: 100vh; /* Phủ lên toàn bộ nội dung */
-        background: rgba(0, 0, 0, 0.6);
+    .quiz-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 3rem;
     }
 
-    /* Nội dung chính */
-    .content-container {
+    .quiz-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
         position: relative;
-        z-index: 2;
-        padding-bottom: 50px; /* Để tránh nội dung bị che mất khi cuộn */
+        padding-bottom: 15px;
     }
 
+    .quiz-header h2 {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 2rem;
+    }
+
+    .quiz-header:after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 3px;
+        background-color: var(--secondary-color);
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 10px;
+    }
+
+    .quiz-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .question-card {
+        background-color: var(--light-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .question-title {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .answer-option {
+        display: block;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        background-color: white;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .answer-option:hover {
+        background-color: #f8f9fa;
+        border-color: var(--secondary-color);
+    }
+
+    .answer-radio {
+        margin-right: 10px;
+    }
+
+    .submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 12px 30px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        display: block;
+        margin: 2rem auto 0;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        background-color: #5a6558;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .results-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        padding: 3rem;
+        text-align: center;
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .result-header {
+        margin-bottom: 2rem;
+    }
+
+    .result-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .skin-type-name {
+        color: var(--secondary-color);
+    }
+
+    .result-description {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 1.5rem auto;
+        line-height: 1.7;
+    }
+
+    .result-icon {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .recommendation-btn {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 12px 30px;
+        border: none;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+    }
+
+    .recommendation-btn:hover {
+        background-color: #5a6558;
+        transform: translateY(-3px);
+    }
+
+    .retake-btn {
+        background-color: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 10px 25px;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+        display: inline-block;
+    }
+
+    .retake-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .page-background {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
 </style>
 
-<div class="background-container">
-    <div class="background-overlay"></div>
-
-    <div class="container mt-5 content-container">
-        <div class="text-center text-light">
-            <h2 class="fw-bold animate__animated animate__fadeInDown"> Discover Your Skin Type </h2>
-            <p class="lead">Answer the questions below to find the perfect skincare routine for you!</p>
-        </div>
-
+<div class="page-background">
+    <div class="container">
         @if (Model.ResultSkinType == null)
         {
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form method="post" class="p-4 bg-white shadow-lg rounded-4 border border-light-subtle">
-                        @foreach (var question in Model.Questions)
-                        {
-                            <div class="mb-4">
-                                <h5 class="fw-bold text-secondary">@question.Question</h5>
-                                @foreach (var answer in question.SkinQuizAnswers)
-                                {
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="SelectedAnswers[@question.Id]" value="@answer.SkinTypeId" required>
-                                        <label class="form-check-label">@answer.Answer</label>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-lg btn-primary shadow-sm px-5 py-3 fw-bold">
-                                🔍 Determine My Skin Type
-                            </button>
-                        </div>
-                    </form>
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <h2>Discover Your Skin Type</h2>
+                    <p>Answer these simple questions to find the perfect skincare routine for your needs</p>
                 </div>
+
+                <form method="post">
+                    @foreach (var question in Model.Questions)
+                    {
+                        <div class="question-card">
+                            <h5 class="question-title">@question.Question</h5>
+                            
+                            @foreach (var answer in question.SkinQuizAnswers)
+                            {
+                                <label class="answer-option">
+                                    <input type="radio" name="SelectedAnswers[@question.Id]" value="@answer.SkinTypeId" 
+                                           class="answer-radio" required>
+                                    @answer.Answer
+                                </label>
+                            }
+                        </div>
+                    }
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-search me-2"></i> Analyze My Skin Type
+                    </button>
+                </form>
             </div>
         }
         else
         {
-            <div class="alert alert-success text-center shadow-lg p-5 rounded-4">
-                <h2 class="fw-bold text-success animate__animated animate__zoomIn">🎉 Your Skin Type: @Model.ResultSkinType.Name 🎉</h2>
-                <p class="text-muted">@Model.ResultSkinType.Description</p>
-
-             
-
-                <div class="mt-4">
-                    <a asp-page="/Customer/Recommended" asp-route-skinTypeId="@Model.ResultSkinType.Id"
-                       class="btn btn-success btn-lg shadow-sm px-5 py-3 fw-bold">
-                        🌿 View Recommended Routine
-                    </a>
+            <div class="results-container">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-
-                <div class="mt-3">
-                    <a asp-page="/Customer/SkinTest" class="btn btn-outline-light mt-3 px-4 py-2">
-                        🔄 Retake the Quiz
+                
+                <div class="result-header">
+                    <h2 class="result-title">Your Skin Type: <span class="skin-type-name">@Model.ResultSkinType.Name</span></h2>
+                </div>
+                
+                <p class="result-description">@Model.ResultSkinType.Description</p>
+                
+                <a asp-page="/Customer/Recommended" asp-route-skinTypeId="@Model.ResultSkinType.Id" 
+                   class="btn recommendation-btn">
+                    <i class="fas fa-list-ul me-2"></i> View Recommended Products
+                </a>
+                
+                <div class="mt-4">
+                    <a asp-page="/Customer/SkinTest" class="retake-btn">
+                        <i class="fas fa-redo-alt me-2"></i> Retake Quiz
                     </a>
                 </div>
             </div>
         }
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script>
     localStorage.removeItem("selectedVoucherId");
 </script>

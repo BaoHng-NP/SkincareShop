@@ -2,118 +2,327 @@
 @model SkincareProductSalesSystem.Pages.Customer.RecommendedModel
 
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Arial', sans-serif;
+    :root {
+        --primary-color: #4a5548;
+        --secondary-color: #6b7868;
+        --accent-color: #9c9b7a;
+        --light-color: #f8f9fa;
+        --text-dark: #333333;
+        --text-light: #6c757d;
     }
 
-    .container-custom {
-        max-width: 90%;
-        max-width: 1200px;
-        margin: auto;
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .routine-container {
         background-color: white;
-        padding: 30px 15px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 3rem;
+        margin: 2rem auto;
+    }
+
+    .routine-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .routine-header:after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 3px;
+        background-color: var(--primary-color);
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
         border-radius: 10px;
     }
 
-    h2, h3, h4 {
-        color: #616e5e;
+    .routine-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
     }
 
-    .text-highlight {
-        color: #495649;
-        font-size: 20px;
+    .routine-subtitle {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .skin-type-info {
+        background: linear-gradient(to right, #f1f3f2, #e9ece8);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        margin: 0 auto 3rem;
+        max-width: 800px;
+    }
+
+    .skin-type-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .skin-type-desc {
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+
+    .step-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-left: 5px solid var(--primary-color);
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        margin-right: 10px;
+        font-weight: 600;
+    }
+
+    .step-name {
+        color: var(--primary-color);
+        font-size: 1.4rem;
+        font-weight: 600;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .step-description {
+        color: var(--text-light);
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+    }
+
+    .product-section {
+        margin-top: 2rem;
+    }
+
+    .product-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .product-section-title:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: var(--accent-color);
+        bottom: -5px;
+        left: 0;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
     }
 
     .product-card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
-        transition: transform 0.2s;
-        max-width: 250px; /* Giảm kích thước thẻ */
-        margin: auto; /* Căn giữa */
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: white;
     }
 
-  
-    .product-card img {
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-img-container {
+        height: 180px;
+        overflow: hidden;
+        background-color: #fcfcfc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-img {
         width: 100%;
-        height: auto; /* Giữ nguyên tỷ lệ */
-        max-height: 180px;
+        height: 100%;
         object-fit: contain;
-        padding: 10px;
+        padding: 1rem;
+    }
+
+    .product-info {
+        padding: 1.3rem;
+        text-align: center;
     }
 
     .product-name {
-        font-size: 17px;
         font-weight: 600;
-        color: #495649;
+        color: var(--primary-color);
+        font-size: 1.05rem;
+        margin-bottom: 0.5rem;
         text-decoration: none;
+        display: block;
     }
 
-        .product-name:hover {
-            color: #616e5e;
-        }
+    .product-name:hover {
+        color: var(--secondary-color);
+    }
 
+    .product-price {
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
 
-    .btn-custom {
-        background-color: #616e5e;
+    .btn-view {
+        margin-top: 1rem;
+        background-color: var(--primary-color);
+        color: white;
         border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        transition: all 0.3s;
     }
 
-        .btn-custom:hover {
-            background-color: #4e584b;
+    .btn-view:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .no-products {
+        color: var(--text-light);
+        font-style: italic;
+        margin: 1rem 0;
+    }
+
+    .bottom-section {
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+    .btn-quiz {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 12px 30px;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-quiz:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-3px);
+    }
+
+    @@media
+    (max-width: 768px) {
+        .routine-container {
+            padding: 2rem 1rem;
         }
+
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
 </style>
 
-<div class="bg-white">
-    <div class="container-custom">
-        <h2 class="text-center fw-bold">🌿 Your Personalized Skincare Routine</h2>
-        <p class="text-muted text-center">Follow these steps to maintain healthy skin.</p>
+<div class="container routine-container">
+    <div class="routine-header">
+        <h1 class="routine-title">Your Personalized Skincare Routine</h1>
+        <p class="routine-subtitle">Follow these steps tailored specifically for your skin type.</p>
+    </div>
 
-        <div class="text-center mb-4">
-            <h3 class="text-highlight fw-bold">Your Skin Type: @Model.SkinType.Name</h3>
-            <p class="lead text-muted">@Model.SkinType.Description</p>
-        </div>
+    <div class="skin-type-info">
+        <h2 class="skin-type-name">Your Skin Type: @Model.SkinType.Name</h2>
+        <p class="skin-type-desc">@Model.SkinType.Description</p>
+    </div>
 
-        @foreach (var step in Model.SkinCareRoutine)
-        {
-            <h3 class="fw-bold text-highlight mt-4">Step @step.StepOrder: @step.StepName</h3>
-            <p class="text-muted">@step.Description</p>
+    @foreach (var step in Model.SkinCareRoutine)
+    {
+        <div class="step-card">
+            <div>
+                <span class="step-number">@step.StepOrder</span>
+                <h3 class="step-name">@step.StepName</h3>
+            </div>
+
+            <p class="step-description">@step.Description</p>
 
             @if (step.RecommendedProducts.Any())
             {
-                <h4 class="fw-bold text-highlight mt-4">🛍️ Recommended @step.StepName Products</h4>
-                <div class="row mt-3 ">
-                    @foreach (var product in step.RecommendedProducts)
-                    {
-                        <div class="col-md-3 mb-3">
-                            <!-- Thu nhỏ col-md-4 xuống col-md-3 -->
-                            <div class="card product-card shadow-sm">
-                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title text-highlight">
-                                        <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="product-name">@product.Name</a>
-                                    </h5>
-                               
+                <div class="product-section">
+                    <h4 class="product-section-title">
+                        <i class="fas fa-leaf me-2"></i> Recommended @step.StepName Products
+                    </h4>
+
+                    <div class="product-grid">
+                        @foreach (var product in step.RecommendedProducts)
+                        {
+                            <div class="product-card">
+                                <div class="product-img-container">
+                                    <img src="@product.ImageUrl" class="product-img" alt="@product.Name">
+                                </div>
+                                <div class="product-info">
+                                    <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="product-name">
+                                        @product.Name
+                                    </a>
+                                    <a asp-page="/Customer/ProductDetail" asp-route-id="@product.Id" class="btn btn-view">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             }
             else
             {
-                <p class="text-muted fst-italic">No recommended products available for this step.</p>
+                <p class="no-products">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No recommended products available for this step.
+                </p>
             }
-        }
-
-        <div class="text-center mt-5">
-            <a asp-page="/Customer/SkinTest" class="btn btn-custom text-white">🔄 Take the Quiz Again</a>
         </div>
+    }
+
+    <div class="bottom-section">
+        <a asp-page="/Customer/SkinTest" class="btn-quiz">
+            <i class="fas fa-redo-alt me-2"></i> Retake Skin Type Quiz
+        </a>
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
 <script>
     localStorage.removeItem("selectedVoucherId");
-        localStorage.removeItem("compareList");
-
+    localStorage.removeItem("compareList");
 </script>

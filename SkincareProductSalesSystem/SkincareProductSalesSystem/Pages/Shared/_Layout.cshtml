@@ -1,135 +1,240 @@
-﻿@* @using BusinessObjects.Models *@
-@* @using SkincareProductSalesSystem.Helpers *@
-@* @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor *@
-@* @{ *@
-@*     var cart = HttpContextAccessor.HttpContext?.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>(); *@
-@*     var cartCount = cart.Sum(i => i.Quantity ?? 0); // Đảm bảo không bị null *@
-@* } *@
-
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     var skinTypeId = HttpContextAccessor.HttpContext?.Session.GetInt32("SkinTypeId");
 }
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Skinalyze</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary-pink: #FFC0CB;
+            --light-pink: #FFE4E1;
+            --dark-pink: #FF99B0;
+            --accent-color: #FF6088;
+            --text-dark: #4A4A4A;
+            --text-light: #7A7A7A;
+        }
+        
         html, body {
-        height: 100%;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Poppins', sans-serif;
         }
 
         main {
-        flex: 1;
+            flex: 1;
         }
+        
         body {
-        background-color: #f8f9fa;
+            background-color: #FFF9FA;
+            color: var(--text-dark);
         }
 
+        /* Navbar styles */
         .navbar {
-        background-color: #4a5548 !important;
-        padding: 1rem 2rem; /* Tăng padding cho navbar */
+            background: linear-gradient(to right, var(--dark-pink), var(--accent-color)) !important;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 2px 15px rgba(255, 153, 176, 0.2);
         }
 
         .navbar-brand {
-        color: #ffffff !important;
-        font-size: 1.5rem;
-        font-weight: bold;
-        padding : 0 2rem;
+            color: white !important;
+            font-size: 1.6rem;
+            font-weight: 700;
+            padding: 0 1.5rem;
+            letter-spacing: 0.5px;
         }
 
         .nav-link {
-        color: #ffffff !important;
-        font-size: 1rem;
-        padding: 0.75rem 2rem;
-        transition: 0.3s;
+            color: white !important;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s ease;
+            margin: 0 0.2rem;
         }
 
         .nav-link:hover {
-        color: #d3d3d3 !important;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 25px;
         }
 
-        .btn-outline-danger {
-        color: #ffffff;
-        border-color: #ffffff;
-        border-radius: 20px;
-        padding: 0.5rem 1rem;
+        /* Buttons */
+        .btn-auth {
+            background-color: white;
+            color: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-outline-danger:hover {
-        background-color: #ffffff;
-        color: #4a5548;
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            background-color: #f8f8f8;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            color: var(--accent-color);
+        }
+        
+        .btn-register {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+        }
+        
+        .btn-register:hover {
+            background-color: white;
+            color: var(--accent-color);
         }
 
-        .btn-primary {
-        background-color: #4a5548;
-        border-color: #4a5548;
-        border-radius: 20px;
-        padding: 0.5rem 1rem;
+        /* User dropdown */
+        .navbar .dropdown-menu {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
         }
 
-        .btn-primary:hover {
-        background-color: #505a4d;
-        border-color: #505a4d;
+        .navbar .dropdown-item {
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
         }
 
+        .navbar .dropdown-item:hover {
+            background-color: var(--light-pink);
+            color: var(--accent-color);
+        }
+        
+        .dropdown-item.text-danger:hover {
+            background-color: rgba(255, 0, 0, 0.05);
+        }
+
+        .navbar .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        /* User greeting */
+        .user-greeting {
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Cart icon */
+        .cart-btn {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .badge-cart {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: white;
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        /* Footer */
         .footer {
-        background-color: #4a5548;
-        color: #ffffff;
-        padding: 1rem 0;
-        text-align: center;
-        margin-top: auto;
+            background: linear-gradient(to right, var(--dark-pink), var(--accent-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 2rem;
         }
 
         .footer a {
-        color: #ffffff;
-        text-decoration: none;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0 1rem;
+            transition: all 0.3s ease;
         }
 
         .footer a:hover {
-        color: #d3d3d3;
+            color: var(--light-pink);
         }
-
-        .cart-icon {
-        font-size: 1.5rem;
-        margin-right: 5px;
-        }
-
-        .greeting {
-        font-size: 1rem;
-        font-weight: bold;
-        color: #ffffff;
-
-        }
-
-        .btn-group {
-        gap: 0.5rem;
+        
+        /* Mobile responsiveness */
+        @@media (max-width: 992px) {
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.2rem 0;
+            }
+            
+            .cart-btn {
+                margin-right: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .user-actions {
+                margin-top: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-greeting {
+                margin-bottom: 0.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
-            <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg shadow-sm">
+            <div class="container">
                 <a class="navbar-brand" asp-page="/Index">Skinalyze</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-                aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         @if (User.Identity.IsAuthenticated)
@@ -142,75 +247,62 @@
                             @if (User.IsInRole("Staff"))
                             {
                                 <li class="nav-item"><a class="nav-link" asp-page="/Staff/Orders/Index">Manage Orders</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Products/Index">Manage Product</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Categories/Index">Manage Category</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Products/Index">Manage Products</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Categories/Index">Manage Categories</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Staff/Quiz/Index">Manage Quiz</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-page="/Staff/Vouchers/Index">Manage Vouchers</a></li>
-
-
                             }
                             @if (User.IsInRole("Customer"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-page="/index">Home</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/store">Store</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/about">About</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/contact">Contact</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/content">News</a></li>
-
-                                <li class="nav-item"><a class="nav-link" asp-page="/Customer/skintest">Skin Quiz</a></li>
-                                @if (skinTypeId.HasValue && skinTypeId > 0)
-                                {
-                                    <a class="nav-link" asp-page="/Customer/Recommended" asp-route-skinTypeId="@skinTypeId">Routine</a>
-                                }
-                                else
-                                {
-                                    <a class="nav-link" asp-page="/Customer/SkinTest">Routine</a>
-                                }
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Index" ? "active" : "")" asp-page="/Index">Home</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/store" ? "active" : "")" asp-page="/Customer/store">Store</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/about" ? "active" : "")" asp-page="/Customer/about">About</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/content" ? "active" : "")" asp-page="/Customer/content">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/skintest" ? "active" : "")" asp-page="/Customer/skintest">Skin Quiz</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/Recommended" ? "active" : "")" asp-page="/Customer/Recommended">Routine</a></li>
+                                <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/contact" ? "active" : "")" asp-page="/Customer/contact">Contact</a></li>
                             }
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" asp-page="/index">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-page="customer/store">Store</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-page="customer/about">About</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-page="customer/contact">Contact</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-page="customer/skintest">Diagnosis</a></li>
-
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Index" ? "active" : "")" asp-page="/Index">Home</a></li>
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/store" ? "active" : "")" asp-page="/Customer/store">Store</a></li>
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/about" ? "active" : "")" asp-page="/Customer/about">About</a></li>
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/content" ? "active" : "")" asp-page="/Customer/content">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/skintest" ? "active" : "")" asp-page="/Customer/skintest">Skin Quiz</a></li>
+                            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Customer/contact" ? "active" : "")" asp-page="/Customer/contact">Contact</a></li>
                         }
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <div class="d-flex align-items-center">
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Customer"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link position-relative" asp-page="/Customer/Cart">
-                                        <i class="bi bi-cart3 fs-4"></i>
-                                        @* <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> *@
-                                        @*     @cartCount *@
-                                        @* </span> *@
+                                <a class="cart-btn" asp-page="/Customer/Cart">
+                                    <i class="bi bi-bag fs-5 text-white"></i>
 
-                                    </a>
-                                </li>
+                                </a>
                             }
-                            <!-- Dropdown Menu -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle fw-bold " style="padding-top: 1.2rem" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Hello, @User.Identity.Name
+                            
+                            <div class="dropdown">
+                                <a class="nav-link user-greeting dropdown-toggle" href="#" id="userDropdown" 
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle me-2"></i> @User.Identity.Name
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    
                                     @if (User.IsInRole("Customer"))
                                     {
                                         <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                                         <li>
                                             <a class="dropdown-item" asp-page="/Customer/vourcher">
-                                                <i class="bi bi-gift-fill text-info me-2"></i>Voucher
+                                                <i class="bi bi-gift-fill me-2" style="color: #FF99B0;"></i>Vouchers
                                             </a>
                                         </li>
-                                        <li><a class="dropdown-item" asp-page="/Customer/OrderHistory"><i class="bi bi-clock-history me-2"></i>History</a></li>
-                                    }else{
+                                        <li><a class="dropdown-item" asp-page="/Customer/OrderHistory"><i class="bi bi-clock-history me-2"></i>Order History</a></li>
+                                    }
+                                    else
+                                    {
                                         <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                                     }
                                     <li><hr class="dropdown-divider"></li>
@@ -222,43 +314,55 @@
                                         </form>
                                     </li>
                                 </ul>
-                            </li>
+                            </div>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm me-2" asp-page="/Auth/Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn  btn-sm btn-group" asp-page="/Auth/Register">Register</a>
-                            </li>
+                            <div class="user-actions d-flex">
+                                <a class="btn btn-auth me-2" asp-page="/Auth/Login">Login</a>
+                                <a class="btn btn-auth btn-register" asp-page="/Auth/Register">Register</a>
+                            </div>
                         }
-                    </ul>
-
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class=" mx-0">
-        <main role="main" >
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main">
+        @RenderBody()
+    </main>
 
-    <!-- Footer -->
-    <footer class="footer mt-auto">
-        <div class="container text-center">
-            <p>&copy; 2025 Skinalyze. All Rights Reserved.</p>
-            <p><a href="/Customer/contact">Contact Us</a> | <a href="/Customer/about">About</a></p>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <p class="mb-2">© 2025 Skinalyze. All Rights Reserved.</p>
+                    <div class="footer-links">
+                        <a asp-page="/Customer/content">Blog</a>
+                        <a asp-page="/Customer/about">About Us</a>
+                        <a asp-page="/Customer/contact">Contact</a>
+                        <a asp-page="/Privacy">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
-
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        // Add active class to current nav item
+        document.addEventListener("DOMContentLoaded", function() {
+            // Update cart count if needed
+            // If you want to reimplement cart count functionality, uncomment this:
+            // const cartCount = localStorage.getItem('cartCount') || '0';
+            // document.querySelector(".badge-cart").textContent = cartCount;
+        });
+    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
