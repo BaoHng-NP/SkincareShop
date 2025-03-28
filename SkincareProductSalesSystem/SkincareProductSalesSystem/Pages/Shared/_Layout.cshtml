@@ -246,11 +246,11 @@
                             }
                             @if (User.IsInRole("Staff"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Orders/Index">Manage Orders</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Products/Index">Manage Products</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Categories/Index">Manage Categories</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Quiz/Index">Manage Quiz</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Vouchers/Index">Manage Vouchers</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Orders/Index"> Orders</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Products/Index"> Products</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Categories/Index"> Categories</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Quiz/Index"> Quiz</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Staff/Vouchers/Index"> Vouchers</a></li>
                             }
                             @if (User.IsInRole("Customer"))
                             {
@@ -293,7 +293,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     @if (User.IsInRole("Customer"))
                                     {
-                                        <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                                        <li><a class="dropdown-item" asp-page="/auth/profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                                         <li>
                                             <a class="dropdown-item" asp-page="/Customer/vourcher">
                                                 <i class="bi bi-gift-fill me-2" style="color: #FF99B0;"></i>Vouchers
@@ -303,7 +303,7 @@
                                     }
                                     else
                                     {
-                                        <li><a class="dropdown-item" asp-page="/Profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                                        <li><a class="dropdown-item" asp-page="/auth/profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                                     }
                                     <li><hr class="dropdown-divider"></li>
                                     <li>

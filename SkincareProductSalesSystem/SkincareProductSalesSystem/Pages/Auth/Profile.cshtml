@@ -1,0 +1,102 @@
+﻿@page "/profile"
+@model ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 30px auto;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background-color: #ff99b0;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .profile-details {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 15px;
+        padding: 20px;
+    }
+
+        .profile-details dt {
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+            padding-right: 15px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .profile-details dd {
+            background-color: #fff0f5;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ff99b0;
+            min-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .profile-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background-color: #fff0f5;
+    }
+
+        .profile-actions a {
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #ff99b0;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+            .profile-actions a:hover {
+                background-color: #ff6b9e;
+            }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>User Profile</h1>
+    </div>
+
+    <div class="profile-details">
+        <dt>Full Name</dt>
+        <dd>@Html.DisplayFor(model => model.UserInfo.FullName)</dd>
+
+        <dt>Email</dt>
+        <dd>@Html.DisplayFor(model => model.UserInfo.Email)</dd>
+
+        <dt>Phone</dt>
+        <dd>@Html.DisplayFor(model => model.UserInfo.Phone)</dd>
+
+        <dt>Address</dt>
+        <dd>@Html.DisplayFor(model => model.UserInfo.Address)</dd>
+
+        @if(Model.UserInfo.RoleId == 2){
+            <dt>Loyalty Points</dt>
+            <dd>@Html.DisplayFor(model => model.UserInfo.LoyaltyPoints)</dd>
+        }
+         
+    </div>
+
+    <div class="profile-actions">
+        <a asp-page="./Index">Back to List</a>
+        <a asp-page="/Auth/ChangePassword">Change Password</a>
+    </div>
+</div>

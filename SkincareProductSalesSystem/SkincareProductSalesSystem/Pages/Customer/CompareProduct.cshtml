@@ -64,16 +64,23 @@
                     <td><strong>Image</strong></td>
                     <td>
                         <img src="@Model.Product1.ImageUrl" class="img-fluid" style="width: 150px;" />
-                        @if (Model.Product1.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                        @if (Model.UserInfo != null && Model.UserInfo.SkinTypeId.HasValue)
                         {
-                            <p class="recommendation">✔️ Recommended for your skin type</p>
+                            @if (Model.Product1.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                            {
+                                <p class="recommendation">✔️ Recommended for your skin type</p>
+                            }
                         }
+
                     </td>
                     <td>
                         <img src="@Model.Product2.ImageUrl" class="img-fluid" style="width: 150px;" />
-                        @if (Model.Product2.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                        @if (Model.UserInfo != null && Model.UserInfo.SkinTypeId.HasValue)
                         {
-                            <p class="recommendation">✔️ Recommended for your skin type</p>
+                            @if (Model.Product2.SkinTypes.Any(st => st.Id == Model.UserInfo.SkinTypeId))
+                            {
+                                <p class="recommendation">✔️ Recommended for your skin type</p>
+                            }
                         }
                     
                     </td>
