@@ -1,18 +1,18 @@
 ﻿@page
-@model SkincareProductSalesSystem.Pages.Staff.Vouchers.IndexModel
+@model SkincareProductSalesSystem.Pages.Staff.Contents.IndexModel
 
 @{
-    ViewData["Title"] = "Voucher Management";
+    ViewData["Title"] = "Content Management";
 }
 
 <style>
-    .voucher-container {
+    .content-container {
         background-color: white;
         border-radius: 12px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         padding: 2rem;
         margin: 2rem auto;
-        max-width: 1500px;
+        max-width: 1800px;
     }
 
     .page-header {
@@ -30,26 +30,6 @@
         margin: 0;
     }
 
-    .btn-add {
-        background-color: #FF99B0;
-        color: white;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 25px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        transition: all 0.3s;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-add:hover {
-        background-color: #FF6088;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        color: white;
-    }
-
     .btn-create {
         background-color: #FF99B0;
         color: white;
@@ -65,13 +45,13 @@
         color: white;
     }
 
-    .voucher-table {
+    .content-table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
     }
 
-    .voucher-table th {
+    .content-table th {
         background-color: #FFF0F3;
         color: #555;
         font-weight: 600;
@@ -79,9 +59,39 @@
         text-align: left;
     }
 
-    .voucher-table td {
+    .content-table td {
         padding: 0.75rem;
         border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .content-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .truncate {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-published {
+        background-color: #e6f7ee;
+        color: #28a745;
+    }
+
+    .status-draft {
+        background-color: #f2f2f2;
+        color: #6c757d;
     }
 
     .action-links a {
@@ -133,56 +143,57 @@
         background-color: #FF5252;
         color: white;
     }
-
-    .currency {
-        text-align: right;
-    }
-
-    .percent-value {
-        text-align: right;
-    }
 </style>
 
-<div class="container voucher-container">
+<div class="container content-container">
     <div class="page-header">
-        <h2 class="page-title">Voucher Management</h2>
-        <a asp-page="Create" class="btn-create">Create New</a>
+        <h2 class="page-title">Content Management</h2>
+        <a asp-page="Create" class="btn-create">Add New Content</a>
     </div>
 
     <div class="table-responsive">
-        <table class="voucher-table">
+        <table class="content-table">
             <thead>
                 <tr>
-                    <th>Code</th>
+                    <th>Title</th>
                     <th>Type</th>
-                    <th>Value</th>
-                    <th>Required Points</th>
-                    <th>Expires</th>
-                    <th>Min Order</th>
-                    <th>Max Discount</th>
+                    <th>Content</th>
+                    <th>Status</th>
+                    <th>Published</th>
+                    <th>Created</th>
+                    <th>Author</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Discount)
+                @foreach (var item in Model.Content)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => item.Code)</td>
-                        <td>@Html.DisplayFor(modelItem => item.DiscountType)</td>
-                        <td class="@(item.DiscountType == "Percentage" ? "percent-value" : "currency")">
-                            @if (item.DiscountType == "Percentage")
+                        <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ContentType)</td>
+                        <td class="truncate">@Html.DisplayFor(modelItem => item.Content1)</td>
+                        <td>
+                            @if (item.IsPublished.HasValue && item.IsPublished.Value)
                             {
-                                @(item.DiscountValue.ToString("0.##") + "%")
+                                <span class="status-badge status-published">Published</span>
                             }
                             else
                             {
-                                @string.Format("{0:N0}đ", item.DiscountValue)
+                                <span class="status-badge status-draft">Draft</span>
                             }
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.RequiredPoints)</td>
-                        <td>@Html.DisplayFor(modelItem => item.ExpirationDate)</td>
-                        <td class="currency">@string.Format("{0:N0}đ", item.MinOrderValue)</td>
-                        <td class="currency">@string.Format("{0:N0}đ", item.MaxDiscount)</td>
+                        <td>
+                            @if (item.PublishedAt.HasValue)
+                            {
+                                @item.PublishedAt.Value.ToString("MMM dd, yyyy")
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Author.Email)</td>
                         <td class="actions-cell">
                             <a asp-page="./Edit" asp-route-id="@item.Id" class="btn-action btn-edit">
                                 <i class="bi bi-pencil-square"></i> Edit
@@ -199,4 +210,11 @@
             </tbody>
         </table>
     </div>
+
+    @if (!Model.Content.Any())
+    {
+        <div class="text-center mt-4">
+            <p class="text-muted">No content items found.</p>
+        </div>
+    }
 </div>

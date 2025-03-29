@@ -1,0 +1,171 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Contents.CreateModel
+
+@{
+    ViewData["Title"] = "Create Content";
+}
+
+<style>
+    .editor-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
+
+    .editor-header {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 1rem;
+    }
+
+    .page-title {
+        color: #FF6088;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .control-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #555;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+        padding: 0.75rem;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #FF99B0;
+        box-shadow: 0 0 0 0.2rem rgba(255, 153, 176, 0.15);
+        outline: none;
+    }
+
+    .content-textarea {
+        min-height: 300px;
+        font-family: inherit;
+        line-height: 1.6;
+    }
+
+    .btn-submit {
+        background-color: #FF99B0;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #FF6088;
+    }
+
+    .back-link {
+        color: #777;
+        display: inline-block;
+        margin-top: 1rem;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #FF6088;
+        text-decoration: underline;
+    }
+
+    .form-section {
+        padding: 0.5rem 0;
+    }
+
+    .metadata-section {
+        background-color: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="editor-container">
+    <div class="editor-header">
+        <h2 class="page-title">Create New Content</h2>
+        <p class="text-muted">Create a new blog post or article for your website</p>
+    </div>
+
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label asp-for="Content.Title" class="control-label">Post Title</label>
+                <input asp-for="Content.Title" class="form-control" placeholder="Enter an engaging title..." />
+                <span asp-validation-for="Content.Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.ContentType" class="control-label">Content Type</label>
+                <select asp-for="Content.ContentType" class="form-control">
+                    <option value="Blog">Blog Post</option>
+                    <option value="Article">Article</option>
+                    <option value="News">News</option>
+                    <option value="Tutorial">Tutorial</option>
+                </select>
+                <span asp-validation-for="Content.ContentType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.ImageUrl" class="control-label">Featured Image URL</label>
+                <input asp-for="Content.ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                <span asp-validation-for="Content.ImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.Content1" class="control-label">Content</label>
+                <textarea asp-for="Content.Content1" class="form-control content-textarea"
+                    placeholder="Start writing your content here..."></textarea>
+                <span asp-validation-for="Content.Content1" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="metadata-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Content.AuthorId" class="control-label">Author</label>
+                        <select asp-for="Content.AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Content.PublishedAt" class="control-label">Publish Date</label>
+                        <input asp-for="Content.PublishedAt" type="date" class="form-control" />
+                        <span asp-validation-for="Content.PublishedAt" class="text-danger"></span>
+                        <small class="text-muted">Leave empty to save as draft</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn-submit">Create Content</button>
+            <a asp-page="Index" class="back-link ml-3">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

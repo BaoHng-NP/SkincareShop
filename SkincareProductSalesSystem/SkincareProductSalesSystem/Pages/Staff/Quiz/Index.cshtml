@@ -2,47 +2,349 @@
 @model SkincareProductSalesSystem.Pages.Staff.Quiz.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Manage Skin Quiz";
 }
 
-<h1>Index</h1>
+<style>
+    .quiz-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SkinQuizAnswer[0].Answer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SkinQuizAnswer[0].Question)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SkinQuizAnswer[0].SkinType)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.SkinQuizAnswer) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Answer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Question.Question)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SkinType.Name)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .page-title {
+        color: #FF6088;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .btn-add {
+        background-color: #FF99B0;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-add:hover {
+        background-color: #FF6088;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+
+    .quiz-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .quiz-table th {
+        background-color: #FFF0F3;
+        color: #FF6088;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+    }
+
+    .quiz-table th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .quiz-table th:last-child {
+        border-top-right-radius: 10px;
+        text-align: center;
+    }
+
+    .quiz-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .quiz-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .quiz-table tr:hover {
+        background-color: #FFF9FA;
+    }
+
+    .actions-cell {
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .btn-action {
+        padding: 0.4rem 0.75rem;
+        margin: 0 0.2rem;
+        border-radius: 5px;
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-edit {
+        background-color: #6EA8FF;
+    }
+
+    .btn-edit:hover {
+        background-color: #407BFF;
+        color: white;
+    }
+
+    .btn-details {
+        background-color: #6c757d;
+    }
+
+    .btn-details:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: #FF7B7B;
+    }
+
+    .btn-delete:hover {
+        background-color: #FF5252;
+        color: white;
+    }
+
+    /* Search box */
+    .search-box {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: #FF99B0;
+        box-shadow: 0 0 0 0.2rem rgba(255, 153, 176, 0.25);
+        outline: none;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    /* Skin type label */
+    .skin-type-badge {
+        display: inline-block;
+        background-color: #FFF0F5;
+        color: #FF6088;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #d1d1d1;
+        margin-bottom: 1rem;
+    }
+
+    .empty-text {
+        color: #888;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Tab navigation */
+    .nav-tabs {
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.2s;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #FF6088;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #FF6088;
+        border-bottom-color: #FF6088;
+        background-color: transparent;
+    }
+
+    .answer-text {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="container quiz-container">
+    <div class="page-header">
+        <h2 class="page-title">Manage Skin Quiz</h2>
+        <a asp-page="Create" class="btn btn-add">
+            <i class="bi bi-plus-circle me-2"></i> Add New Answer
+        </a>
+    </div>
+
+
+    <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="quizSearch" class="search-input" placeholder="Search quiz answers...">
+    </div>
+
+    <div class="tab-content" id="quizTabContent">
+        <div class="tab-pane fade show active" id="answers" role="tabpanel" aria-labelledby="answers-tab">
+            @if (Model.SkinQuizAnswer.Any())
+            {
+                <table class="quiz-table" id="quizAnswersTable">
+                    <thead>
+                        <tr>
+                            <th>Answer</th>
+                            <th>Question</th>
+                            <th>Skin Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.SkinQuizAnswer)
+                        {
+                            <tr>
+                                <td class="answer-text" title="@item.Answer">
+                                    @item.Answer
+                                </td>
+                                <td>
+                                    @(item.Question?.Question?.Length > 50
+                                                                ? item.Question.Question.Substring(0, 50) + "..."
+                                                                : item.Question?.Question)
+                        </td>
+                        <td>
+                            <span class="skin-type-badge">
+                                @item.SkinType.Name
+                            </span>
+                        </td>
+                        <td class="actions-cell">
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn-action btn-edit">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a asp-page="./Details" asp-route-id="@item.Id" class="btn-action btn-details">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a asp-page="./Delete" asp-route-id="@item.Id" class="btn-action btn-delete">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <p class="empty-text">No quiz answers found. Get started by adding a new answer.</p>
+                    <a asp-page="Create" class="btn btn-add">
+                        <i class="bi bi-plus-circle me-2"></i> Add First Answer
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+            <div class="mt-4 mb-4">
+                <a href="/Staff/SkinQuizQuestions" class="btn btn-add">
+                    <i class="bi bi-list-check me-2"></i> Manage Questions
+                </a>
+            </div>
+
+            <p class="text-muted">
+                Click the button above to manage the skin quiz questions. You can add, edit, or delete questions from
+                the dedicated page.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('quizSearch');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                const searchValue = this.value.toLowerCase();
+                const table = document.getElementById('quizAnswersTable');
+                if (!table) return;
+
+                const rows = table.getElementsByTagName('tr');
+
+                for (let i = 1; i < rows.length; i++) {
+                    const answerCell = rows[i].getElementsByTagName('td')[0];
+                    const questionCell = rows[i].getElementsByTagName('td')[1];
+                    const skinTypeCell = rows[i].getElementsByTagName('td')[2];
+
+                    if (answerCell && questionCell && skinTypeCell) {
+                        const answerText = answerCell.textContent || answerCell.innerText;
+                        const questionText = questionCell.textContent || questionCell.innerText;
+                        const skinTypeText = skinTypeCell.textContent || skinTypeCell.innerText;
+
+                        if (answerText.toLowerCase().indexOf(searchValue) > -1 ||
+                            questionText.toLowerCase().indexOf(searchValue) > -1 ||
+                            skinTypeText.toLowerCase().indexOf(searchValue) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>

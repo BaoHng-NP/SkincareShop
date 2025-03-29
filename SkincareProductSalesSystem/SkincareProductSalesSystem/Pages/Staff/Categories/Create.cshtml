@@ -2,43 +2,155 @@
 @model SkincareProductSalesSystem.Pages.Staff.Categories.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Category";
 }
 
-<h1>Create</h1>
+<style>
+    .form-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
 
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Category.Name" class="control-label"></label>
-                <input asp-for="Category.Name" class="form-control" />
-                <span asp-validation-for="Category.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Category.IsActive" /> @Html.DisplayNameFor(model => model.Category.IsActive)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category.Description" class="control-label"></label>
-                <input asp-for="Category.Description" class="form-control" />
-                <span asp-validation-for="Category.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .page-title {
+        color: #FF6088;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .page-subtitle {
+        color: #888;
+        font-size: 1rem;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .form-label {
+        color: #555;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #FF99B0;
+        box-shadow: 0 0 0 0.2rem rgba(255, 153, 176, 0.25);
+    }
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        margin-right: 0.5rem;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #FF99B0;
+        border-color: #FF99B0;
+    }
+
+    .form-switch .form-check-label {
+        padding-top: 0.25rem;
+    }
+
+    .btn-submit {
+        background-color: #FF99B0;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-submit:hover {
+        background-color: #FF6088;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-back {
+        color: #666;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+
+    .btn-back:hover {
+        color: #FF6088;
+        transform: translateX(-3px);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .description-input {
+        min-height: 100px;
+    }
+</style>
+
+<div class="container form-container">
+    <div class="page-header">
+        <h2 class="page-title">Create New Category</h2>
+        <p class="page-subtitle">Add a new product category to the system</p>
     </div>
-</div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+        <div class="form-group">
+            <label asp-for="Category.Name" class="form-label">Category Name</label>
+            <input asp-for="Category.Name" class="form-control" placeholder="Enter category name" />
+            <span asp-validation-for="Category.Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Category.Description" class="form-label">Description</label>
+            <textarea asp-for="Category.Description" class="form-control description-input"
+                placeholder="Enter category description"></textarea>
+            <span asp-validation-for="Category.Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" asp-for="Category.IsActive" checked>
+                <label class="form-check-label" asp-for="Category.IsActive">Active Status</label>
+            </div>
+            <small class="text-muted">Toggle to set the category as active or inactive</small>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a asp-page="Index" class="btn-back">
+                <i class="bi bi-arrow-left me-2"></i> Back to Categories
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-plus-circle me-2"></i> Create Category
+            </button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

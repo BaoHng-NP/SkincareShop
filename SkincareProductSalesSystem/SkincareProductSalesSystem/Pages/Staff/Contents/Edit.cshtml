@@ -1,0 +1,241 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Contents.EditModel
+
+@{
+    ViewData["Title"] = "Edit Content";
+}
+
+<style>
+    .editor-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
+
+    .editor-header {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 1rem;
+    }
+
+    .page-title {
+        color: #FF6088;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .control-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #555;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+        padding: 0.75rem;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #FF99B0;
+        box-shadow: 0 0 0 0.2rem rgba(255, 153, 176, 0.15);
+        outline: none;
+    }
+
+    .content-textarea {
+        min-height: 300px;
+        font-family: inherit;
+        line-height: 1.6;
+    }
+
+    .btn-submit {
+        background-color: #FF99B0;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #FF6088;
+    }
+
+    .back-link {
+        color: #777;
+        display: inline-block;
+        margin-top: 1rem;
+        text-decoration: none;
+        margin-left: 1rem;
+    }
+
+    .back-link:hover {
+        color: #FF6088;
+        text-decoration: underline;
+    }
+
+    .form-section {
+        padding: 0.5rem 0;
+    }
+
+    .metadata-section {
+        background-color: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .publish-toggle {
+        display: flex;
+        align-items: center;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        margin-right: 10px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: #FF99B0;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(26px);
+    }
+</style>
+
+<div class="editor-container">
+    <div class="editor-header">
+        <h2 class="page-title">Edit Content</h2>
+        <p class="text-muted">Update your blog post or article</p>
+    </div>
+
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Content.Id" />
+        <input type="hidden" asp-for="Content.CreatedAt" />
+
+        <div class="form-section">
+            <div class="form-group">
+                <label asp-for="Content.Title" class="control-label">Post Title</label>
+                <input asp-for="Content.Title" class="form-control" />
+                <span asp-validation-for="Content.Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.ContentType" class="control-label">Content Type</label>
+                <select asp-for="Content.ContentType" class="form-control">
+                    <option value="Blog">Blog Post</option>
+                    <option value="Article">Article</option>
+                    <option value="News">News</option>
+                    <option value="Tutorial">Tutorial</option>
+                </select>
+                <span asp-validation-for="Content.ContentType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.ImageUrl" class="control-label">Featured Image URL</label>
+                <input asp-for="Content.ImageUrl" class="form-control" />
+                <span asp-validation-for="Content.ImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content.Content1" class="control-label">Content</label>
+                <textarea asp-for="Content.Content1" class="form-control content-textarea"></textarea>
+                <span asp-validation-for="Content.Content1" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="metadata-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Content.AuthorId" class="control-label">Author</label>
+                        <select asp-for="Content.AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                    </div>
+
+                    <div class="form-group publish-toggle">
+                        <label class="switch">
+                            <input type="checkbox" @(Model.Content.IsPublished == true ? "checked" : "")
+                                name="Content.IsPublished" value="true" />
+                            <span class="slider"></span>
+                        </label>
+                        <label class="control-label">Published</label>
+                        <input type="hidden" name="Content.IsPublished" value="false" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Content.PublishedAt" class="control-label">Publish Date</label>
+                        <input asp-for="Content.PublishedAt" type="date" class="form-control" />
+                        <span asp-validation-for="Content.PublishedAt" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Created Date</label>
+                        <p class="form-control-static">
+                            @(Model.Content.CreatedAt.HasValue ? Model.Content.CreatedAt.Value.ToShortDateString() :
+                                                        "-")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn-submit">Save Changes</button>
+            <a asp-page="Index" class="back-link">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

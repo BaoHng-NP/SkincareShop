@@ -1,0 +1,147 @@
+﻿@page
+@model SkincareProductSalesSystem.Pages.Staff.Contents.DetailsModel
+
+@{
+    ViewData["Title"] = "Content Details";
+}
+
+<style>
+    .details-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
+
+    .page-title {
+        color: #FF6088;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .details-row dt {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .details-row dd {
+        margin-bottom: 0.75rem;
+    }
+
+    .content-preview {
+        white-space: pre-line;
+        line-height: 1.6;
+    }
+
+    .action-links {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-edit {
+        background-color: #FF99B0;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-edit:hover {
+        background-color: #FF6088;
+        color: white;
+    }
+
+    .back-link {
+        color: #777;
+        margin-left: 1rem;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #FF6088;
+        text-decoration: underline;
+    }
+
+    .published-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background-color: #e6f7ee;
+        color: #28a745;
+    }
+
+    .draft-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background-color: #f2f2f2;
+        color: #6c757d;
+    }
+</style>
+
+<div class="details-container">
+    <h2 class="page-title">Content Details</h2>
+
+    <dl class="row details-row">
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Content.Title)</dd>
+
+        <dt class="col-sm-3">Type</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Content.ContentType)</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">
+            @if (Model.Content.IsPublished == true)
+            {
+                <span class="published-badge">Published</span>
+            }
+            else
+            {
+                <span class="draft-badge">Draft</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">Published Date</dt>
+        <dd class="col-sm-9">
+            @if (Model.Content.PublishedAt.HasValue)
+            {
+                @Html.DisplayFor(model => model.Content.PublishedAt)
+            }
+            else
+            {
+                <span>Not published yet</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">Created Date</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Content.CreatedAt)</dd>
+
+        <dt class="col-sm-3">Author</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Content.Author.Email)</dd>
+
+        @if (!string.IsNullOrEmpty(Model.Content.ImageUrl))
+        {
+            <dt class="col-sm-3">Image</dt>
+            <dd class="col-sm-9">
+                <img src="@Model.Content.ImageUrl" alt="Content Image" style="max-width: 300px; max-height: 200px;" />
+            </dd>
+        }
+
+        <dt class="col-sm-3">Content</dt>
+        <dd class="col-sm-9 content-preview">@Html.DisplayFor(model => model.Content.Content1)</dd>
+    </dl>
+
+    <div class="action-links">
+        <a asp-page="./Edit" asp-route-id="@Model.Content.Id" class="btn-edit">Edit</a>
+        <a asp-page="./Index" class="back-link">Back to List</a>
+    </div>
+</div>
