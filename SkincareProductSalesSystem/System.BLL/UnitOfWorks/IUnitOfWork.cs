@@ -8,9 +8,9 @@ namespace System.BLL.UnitOfWorks
 {
     public interface IUnitOfWork
     {
-        Task CreateTransaction();
-        Task Commit();
-        Task Rollback();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
         Task SaveChange();
     }
 }

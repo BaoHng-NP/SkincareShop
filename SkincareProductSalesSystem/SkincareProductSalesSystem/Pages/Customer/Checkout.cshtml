@@ -197,16 +197,20 @@
                     <label for="voucherSelect" class="form-label fw-bold">Apply Voucher:</label>
                     <select id="voucherSelect" name="voucherSelect" class="form-select mt-1" onchange="updateTotal()">
                         <option value="0" data-discount="0">No Voucher</option>
-                        @foreach (var voucher in Model.UserVoucher)
+                        @if (Model.UserVoucher != null && Model.UserVoucher.Any())
                         {
-                            <option value="@voucher.Id"
-                                    data-discount="@voucher.Discount.DiscountValue"
-                                    data-type="@voucher.Discount.DiscountType"
-                                    data-max="@voucher.Discount.MaxDiscount">
-                                @voucher.Discount.Code - @voucher.Discount.DiscountValue.ToString("N0")
-                                @(voucher.Discount.DiscountType == "fixed" ? "₫" : "%")
-                            </option>
+                            @foreach (var voucher in Model.UserVoucher)
+                            {
+                                <option value="@voucher.Id"
+                                        data-discount="@voucher.Discount?.DiscountValue"
+                                        data-type="@voucher.Discount?.DiscountType"
+                                        data-max="@voucher.Discount?.MaxDiscount">
+                                    @voucher.Discount?.Code - @voucher.Discount?.DiscountValue.ToString("N0")
+                                    @(voucher.Discount?.DiscountType == "fixed" ? "₫" : "%")
+                                </option>
+                            }
                         }
+
                     </select>
                 </div>
 
@@ -233,6 +237,15 @@
                 <small class="text-muted d-block text-center mt-2">Need help? Call us at 1-877-707-6272</small>
             </div>
         </div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
 
    
 

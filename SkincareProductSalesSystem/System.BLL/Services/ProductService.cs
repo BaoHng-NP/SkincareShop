@@ -66,7 +66,7 @@ namespace System.BLL.Services
         }
         public async Task<IEnumerable<Product>> GetProductsByFilterAsync(int? categoryId, int? brandId)
         {
-            var query = _repository.FindAll(); 
+            var query = _repository.FindAll(p => p.Stock > 0); 
 
             if (categoryId.HasValue)
             {
@@ -78,7 +78,7 @@ namespace System.BLL.Services
                 query = query.Where(p => p.BrandId == brandId.Value);
             }
 
-            return await query.OrderBy(p => p.Name).ToListAsync(); // Gọi ToListAsync() chỉ 1 lần
+            return await query.OrderBy(p => p.Name).ToListAsync(); 
         }
         public async Task<IEnumerable<Product>> GetProductsBySkinTypeAsync(int skinTypeId)
         {

@@ -19,12 +19,16 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
         private readonly IOrderService _orderService;
         private readonly IAccountService _accountService;
         private readonly IHubContext<SignalrServer> _hubContext;
-
-        public IndexModel(IOrderService orderService, IAccountService accountService, IHubContext<SignalrServer> hubContext)
+        private readonly IDiscountService _discountService;
+        private readonly IUserVourcherService _userVourcherService;
+      
+        public IndexModel(IOrderService orderService, IAccountService accountService, IDiscountService discountService, IUserVourcherService userVourcherService, IHubContext<SignalrServer> hubContext)
         {
             _orderService = orderService;
             _accountService = accountService;
             _hubContext = hubContext;
+            _discountService = discountService;
+            _userVourcherService = userVourcherService;
         }
 
         public IEnumerable<Order> Order { get; set; } = default!;
@@ -79,7 +83,44 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
             Order = await _orderService.GetAllOrdersAsync();
             return RedirectToPage();
         }
+        public async Task<IActionResult> OnPostCancelAsync(int id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Order not found!";
+                return Page();
+            }
 
+
+            order.Status = "Canceled";
+            await _orderService.UpdateOrderAsync(order);
+            if (order.PaymentMethod == "VNPay")
+            {
+                var dis = new Discount
+                {
+                    Code = order.Status,
+                    DiscountType = "fixed",
+                    DiscountValue = order.TotalPrice,
+                    RequiredPoints = 0,
+                    MinOrderValue = 0,
+                    CreatedAt = DateTime.Now,
+                };
+                await _discountService.AddDiscountAsync(dis);
+              
+                var newUserVoucher = new UserVoucher
+                {
+                    UserId = order.UserId,
+                    DiscountId = dis.Id,
+                    RedeemedAt = DateTime.Now,
+                };
+                await _userVourcherService.AddUserVoucherAsync(newUserVoucher);
+            }
+            TempData["SuccessMessage"] = "Order has been cancelled successfully!";
+            await _hubContext.Clients.All.SendAsync("LoadAllOrder");
+
+            return RedirectToPage();
+        }
 
 
     }

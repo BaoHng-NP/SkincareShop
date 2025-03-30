@@ -9,7 +9,25 @@
         font-weight: 700;
         margin: 0;
     }
+
+    .toast-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #28a745; /* Màu xanh thành công */
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        z-index: 1000;
+    }
+
+        .toast-message.show {
+            opacity: 1;
+        }
 </style>
+
 <div class="container mt-4">
     <h1 class="mb-4 page-title">Order Management</h1>
 
@@ -95,9 +113,24 @@
                                 <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
                                     <i class="bi bi-eye"></i> Details
                                 </a>
-                                <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
+
+                                @if (item.Status == "Pending")
+                                {
+                                    <form method="post" asp-page-handler="Cancel" asp-route-id="@item.Id">
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure you want to cancel this order?');">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <!-- Giữ chỗ để căn chỉnh bằng class invisible -->
+                                    <div style="min-width: 70px;"></div>
+                                }
+                                @* <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm"> *@
+                                @*     <i class="bi bi-trash"></i> Delete *@
+                                @* </a> *@
                             </div>
                         </td>
 
@@ -108,7 +141,21 @@
         </table>
     </div>
 </div>
-
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="toast" class="toast-message">
+        @TempData["SuccessMessage"]
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toast = document.getElementById("toast");
+            toast.classList.add("show");
+            setTimeout(function () {
+                toast.classList.remove("show");
+            }, 3000); // Ẩn sau 3 giây
+        });
+    </script>
+}
 <script>
          function filterOrders() {
         let selectedStatus = document.getElementById("statusFilter").value.toLowerCase();

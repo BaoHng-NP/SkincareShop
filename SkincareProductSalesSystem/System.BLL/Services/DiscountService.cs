@@ -41,7 +41,7 @@ namespace System.BLL.Services
         public async Task<IEnumerable<Discount>> GetAllDiscountsAsync()
         {
 
-            return await _repository.FindAll().ToListAsync() ;
+            return await _repository.FindAll(d => d.Code != "Canceled").ToListAsync();
         }
 
         public async Task<Discount> GetDiscountByIdAsync(int id)

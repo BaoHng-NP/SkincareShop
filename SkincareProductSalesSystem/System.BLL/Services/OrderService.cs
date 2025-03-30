@@ -36,66 +36,78 @@ namespace System.BLL.Services
             if (_productDetailRepository == null)
                 throw new NullReferenceException("ProductDetailRepository is not initialized.");
 
-            // Thêm đơn hàng vào database
-            _repository.Create(order);
-            await _unitOfWork.SaveChange(); // Lưu để có order.Id
+            await _unitOfWork.BeginTransactionAsync(); // 🚀 Bắt đầu transaction
 
-            foreach (var item in cartItems)
+            try
             {
-                var totalStock = await _productDetailRepository
-                    .FindAll(p => p.ProductId == item.ProductId && p.Quantity > 0)
-                    .SumAsync(p => p.Quantity);
+                // Thêm đơn hàng vào database
+                _repository.Create(order);
+                await _unitOfWork.SaveChange(); // Lưu để có order.Id
 
-                if (totalStock < item.Quantity)
+                foreach (var item in cartItems)
                 {
-                    throw new InvalidOperationException($"Not enough stock for ProductId {item.ProductId}");
-                }
+                    var totalStock = await _productDetailRepository
+                        .FindAll(p => p.ProductId == item.ProductId && p.Quantity > 0)
+                        .SumAsync(p => p.Quantity);
 
-                var orderDetail = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = (int)item.Quantity,
-                    UnitPrice = (decimal)item.Price
-                };
-                _orderDetailRepository.Create(orderDetail);
-
-                var productDetails = await _productDetailRepository
-                    .FindAll(p => p.ProductId == item.ProductId && p.Quantity > 0)
-                    .OrderBy(p => p.CreatedDate)
-                    .ToListAsync();
-
-                int remainingQuantity = (int)item.Quantity;
-
-                foreach (var detail in productDetails)
-                {
-                    if (remainingQuantity <= 0) break;
-
-                    if (detail.Quantity >= remainingQuantity)
+                    if (totalStock < item.Quantity)
                     {
-                        detail.Quantity -= remainingQuantity;
-                        remainingQuantity = 0;
-                    }
-                    else
-                    {
-                        remainingQuantity -= (int)detail.Quantity;
-                        detail.Quantity = 0;
+                        throw new InvalidOperationException($"Not enough stock for {item.ProductName}, Stock: {totalStock}");
                     }
 
-                    _productDetailRepository.Update(detail);
+                    var orderDetail = new OrderItem
+                    {
+                        OrderId = order.Id,
+                        ProductId = item.ProductId,
+                        Quantity = (int)item.Quantity,
+                        UnitPrice = (decimal)item.Price
+                    };
+                    _orderDetailRepository.Create(orderDetail);
+
+                    var productDetails = await _productDetailRepository
+                        .FindAll(p => p.ProductId == item.ProductId && p.Quantity > 0)
+                        .OrderBy(p => p.CreatedDate)
+                        .ToListAsync();
+
+                    int remainingQuantity = (int)item.Quantity;
+
+                    foreach (var detail in productDetails)
+                    {
+                        if (remainingQuantity <= 0) break;
+
+                        if (detail.Quantity >= remainingQuantity)
+                        {
+                            detail.Quantity -= remainingQuantity;
+                            remainingQuantity = 0;
+                        }
+                        else
+                        {
+                            remainingQuantity -= (int)detail.Quantity;
+                            detail.Quantity = 0;
+                        }
+
+                        _productDetailRepository.Update(detail);
+                    }
+
+                    // Cập nhật tổng số lượng trong bảng Product
+                    var product = await _productService.GetProductByIdAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        product.Stock = productDetails.Sum(p => p.Quantity);
+                        await _productService.UpdateProductAsync(product);
+                    }
                 }
 
-                // Cập nhật tổng số lượng trong bảng Product
-                var product = await _productService.GetProductByIdAsync(item.ProductId);
-                if (product != null)
-                {
-                    product.Stock = productDetails.Sum(p => p.Quantity);
-                    await _productService.UpdateProductAsync(product);
-                }
+                await _unitOfWork.SaveChange(); // Lưu thay đổi
+                await _unitOfWork.CommitTransactionAsync(); // 🚀 Commit nếu thành công
             }
-
-            await _unitOfWork.SaveChange(); // Lưu thay đổi
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync(); // 🔥 Rollback nếu có lỗi
+                throw; // Ném lỗi để xử lý ở chỗ khác
+            }
         }
+
 
 
 

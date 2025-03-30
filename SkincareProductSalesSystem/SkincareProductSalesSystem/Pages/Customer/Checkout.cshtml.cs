@@ -128,8 +128,16 @@ namespace SkincareProductSalesSystem.Pages.Customer
                     Phone = PaymentInfo.Phone,
                     Address = PaymentInfo.Address
                 };
+                try
+                {
+                    await _orderService.AddOrderAsync(newOrder, CartItems);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"{ex.Message}");
+                    return Page();
+                }
 
-                await _orderService.AddOrderAsync(newOrder, CartItems);
                 HttpContext.Session.Remove(cartKey);
                 if (voucherId > 0)
                 {
