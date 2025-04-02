@@ -3,6 +3,9 @@ using System.BLL.Services;
 using System.Collections.Generic;
 using System.DAL.Repositories;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 namespace SkincareProductSalesSystem.Pages.Manager.Dashboard
 {
@@ -20,24 +23,81 @@ namespace SkincareProductSalesSystem.Pages.Manager.Dashboard
         public List<BestSellingProduct> BestSellingProducts { get; set; }
         public List<UserStatistic> UserStatistics { get; set; }
 
-        // Thêm các property mới
         public int TotalUsers { get; set; }
         public decimal TotalRevenue { get; set; }
         public List<TopSellingProductDetail> TopSellingProducts { get; set; }
         public List<RevenueByMonth> MonthlyRevenue { get; set; }
+        public List<ProductStockStatus> LowStockProducts { get; set; }
+        public List<ProductStockStatus> OutOfStockProducts { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string TimePeriod { get; set; } = "12months";
+
+        [BindProperty(SupportsGet = true)]
+        public int Year { get; set; } = DateTime.Now.Year;
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? StartDate { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? EndDate { get; set; }
+
+        public List<int> AvailableYears { get; set; } = new List<int>();
 
         public async Task OnGetAsync()
         {
-            OrderStatistics = await _dashboardService.GetOrderStatistics();
-            OrderCompletionRate = await _dashboardService.GetOrderCompletionRate();
-            BestSellingProducts = await _dashboardService.GetBestSellingProducts(5);
-            UserStatistics = await _dashboardService.GetUserStatistics();
+            try
+            {
+                // Get available years for filter dropdowns
+                AvailableYears = await _dashboardService.GetAvailableDataYears();
 
-            // Thêm dữ liệu mới
-            TotalUsers = await _dashboardService.GetTotalUsers();
-            TotalRevenue = await _dashboardService.GetTotalRevenue();
-            TopSellingProducts = await _dashboardService.GetTopSellingProducts(5);
-            MonthlyRevenue = await _dashboardService.GetMonthlyRevenue();
+                // If no year selected but years are available, use the most recent
+                if (Year == 0 && AvailableYears.Any())
+                {
+                    Year = AvailableYears.First();
+                }
+
+                // Get date range
+                DateTime startDate, endDate;
+
+                if (TimePeriod == "custom" && StartDate.HasValue && EndDate.HasValue)
+                {
+                    startDate = StartDate.Value;
+                    endDate = EndDate.Value;
+                }
+                else if (TimePeriod == "year")
+                {
+                    // For year selection, show the entire year
+                    startDate = new DateTime(Year, 1, 1);
+                    endDate = new DateTime(Year, 12, 31);
+                }
+                else // "12months" or default
+                {
+                    // Last 12 months from current date
+                    DateTime now = DateTime.Now;
+                    startDate = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+                    endDate = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month));
+                }
+
+                // Set the date values for display in the UI
+                StartDate = startDate;
+                EndDate = endDate;
+
+                // Get filtered data
+                OrderStatistics = await _dashboardService.GetOrderStatisticsByDateRange(startDate, endDate);
+                OrderCompletionRate = await _dashboardService.GetOrderCompletionRateByDateRange(startDate, endDate);
+                UserStatistics = await _dashboardService.GetUserStatisticsByDateRange(startDate, endDate);
+                TotalUsers = await _dashboardService.GetTotalUsers();
+                TotalRevenue = await _dashboardService.GetTotalRevenueByDateRange(startDate, endDate);
+                TopSellingProducts = await _dashboardService.GetTopSellingProductsByDateRange(startDate, endDate, 5);
+                MonthlyRevenue = await _dashboardService.GetMonthlyRevenueByDateRange(startDate, endDate);
+                LowStockProducts = await _dashboardService.GetLowStockProducts(10, 5);
+                OutOfStockProducts = await _dashboardService.GetOutOfStockProducts(5);
+            }
+            catch (Exception ex)
+            {
+                // Error handling...
+            }
         }
     }
 }

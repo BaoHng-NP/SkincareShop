@@ -83,12 +83,131 @@
     .smaller-chart {
         max-height: 300px;
     }
+
+    /* Add to your existing styles */
+    .btn-outline-primary {
+        color: #FF99B0;
+        border-color: #FF99B0;
+    }
+
+    .btn-outline-primary:hover,
+    .btn-outline-primary:focus,
+    .btn-check:checked+.btn-outline-primary {
+        background-color: #FF99B0;
+        border-color: #FF99B0;
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #FF99B0;
+        border-color: #FF99B0;
+    }
+
+    .btn-primary:hover {
+        background-color: #FF6088;
+        border-color: #FF6088;
+    }
+
+    .quarter-filter.active {
+        background-color: #FF99B0;
+        color: white;
+        border-color: #FF99B0;
+    }
+
+    .btn-outline-primary.quarter-filter:hover {
+        background-color: #FFB7C5;
+        border-color: #FFB7C5;
+        color: white;
+    }
+
+    .product-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .product-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .product-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .product-list::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }
+
+    .product-list::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
+    }
 </style>
 
 <div class="container py-4">
     <h1 class="dashboard-title">
         <i class="fas fa-chart-pie me-2"></i>Dashboard
     </h1>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5><i class="fas fa-filter me-2"></i>Filter Dashboard</h5>
+
+                <form method="get" id="filterForm" class="row g-3">
+                    <!-- Primary Filter: 12 Months or Year Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Time Period</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="TimePeriod" id="period12months" value="12months"
+                                @(Model.TimePeriod == "12months" ? "checked" : "") autocomplete="off">
+                            <label class="btn btn-outline-primary" for="period12months">Last 12 Months</label>
+
+                            <input type="radio" class="btn-check" name="TimePeriod" id="periodByYear" value="year"
+                                @(Model.TimePeriod == "year" || Model.TimePeriod.StartsWith("quarter") ? "checked" : "")
+                                autocomplete="off">
+                            <label class="btn btn-outline-primary" for="periodByYear">By Year</label>
+
+                            <input type="radio" class="btn-check" name="TimePeriod" id="periodCustom" value="custom"
+                                @(Model.TimePeriod == "custom" ? "checked" : "") autocomplete="off">
+                            <label class="btn btn-outline-primary" for="periodCustom">Custom</label>
+                        </div>
+                    </div>
+
+                    <!-- Year Selector (only shows when By Year is selected) -->
+                    <div id="yearSelector"
+                        class="col-md-6 mb-3 @(Model.TimePeriod == "12months" || Model.TimePeriod == "custom" ? "d-none" : "")">
+                        <label class="form-label">Select Year</label>
+                        <div class="btn-group w-100" role="group">
+                            @foreach (var year in Model.AvailableYears)
+                            {
+                                <input type="radio" class="btn-check" name="Year" id="year@(year)" value="@year"
+                                    @(Model.Year == year ? "checked" : "") autocomplete="off">
+                                <label class="btn btn-outline-primary" for="year@(year)">@year</label>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Custom Date Range (only shows for custom period) -->
+                    <div id="customDateFields" class="row g-3 @(Model.TimePeriod == "custom" ? "" : "d-none")">
+                        <div class="col-md-5">
+                            <label for="StartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="StartDate" name="StartDate"
+                                value="@(Model.StartDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="EndDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="EndDate" name="EndDate"
+                                value="@(Model.EndDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Apply</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Stats Cards Row -->
     <div class="row mb-4">
@@ -132,11 +251,11 @@
                         <p class="stats-title">Completed Orders</p>
                         <h2 class="stats-value">@Model.OrderCompletionRate.CompletedOrders</h2>
                         <p class="mb-0">Success rate: @(Model.OrderCompletionRate.CompletedOrders > 0 ||
-                            Model.OrderCompletionRate.CanceledOrders > 0
-                            ? ((double)Model.OrderCompletionRate.CompletedOrders /
-                            (Model.OrderCompletionRate.CompletedOrders + Model.OrderCompletionRate.CanceledOrders) *
-                            100).ToString("F1") + "%"
-                            : "0%")</ p >
+                                                        Model.OrderCompletionRate.CanceledOrders > 0
+                                                        ? ((double)Model.OrderCompletionRate.CompletedOrders /
+                                                        (Model.OrderCompletionRate.CompletedOrders + Model.OrderCompletionRate.CanceledOrders) *
+                                                        100).ToString("F1") + "%"
+                                                        : "0%")</ p>
                     </div>
                     <div class="stats-icon">
                         <i class="fas fa-check-circle"></i>
@@ -146,17 +265,38 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Monthly Revenue Chart -->
-        <div class="col-md-8 mb-4">
+    <!-- Combined Revenue & Orders Chart and Order Completion Chart -->
+    <div class="row mb-4">
+        <!-- Combined Revenue & Orders Chart -->
+        <div class="col-md-8">
             <div class="chart-container">
-                <h5><i class="fas fa-chart-line me-2"></i>Monthly Revenue</h5>
-                <canvas id="revenueChart" height="250"></canvas>
+                <h5><i class="fas fa-chart-line me-2"></i>Revenue & Order Trends</h5>
+                <div class="mb-3 d-flex justify-content-end">
+                    <div class="btn-group" role="group" aria-label="Filter by Quarter">
+                        <button type="button" class="btn btn-sm btn-outline-primary quarter-filter active"
+                            data-quarter="all">All Months</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary quarter-filter"
+                            data-quarter="q1">Q1</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary quarter-filter"
+                            data-quarter="q2">Q2</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary quarter-filter"
+                            data-quarter="q3">Q3</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary quarter-filter"
+                            data-quarter="q4">Q4</button>
+                    </div>
+                </div>
+                <!-- Monthly chart (default) -->
+                <canvas id="combinedChart" height="250"
+                    class="@(ViewData["ShowDailyData"] == null ? "" : "d-none")"></canvas>
+
+                <!-- Daily chart (for short time periods) -->
+                <canvas id="dailyChart" height="250"
+                    class="@(ViewData["ShowDailyData"] != null ? "" : "d-none")"></canvas>
             </div>
         </div>
 
         <!-- Order Completion Chart -->
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4">
             <div class="chart-container">
                 <h5><i class="fas fa-chart-pie me-2"></i>Order Status</h5>
                 <canvas id="orderCompletionChart" height="250"></canvas>
@@ -199,12 +339,80 @@
         </div>
     </div>
 
-    <!-- Order Statistics Bar Chart - Smaller Size -->
     <div class="row">
-        <div class="col-md-8 offset-md-2 mb-4">
-            <div class="chart-container smaller-chart">
-                <h5><i class="fas fa-shopping-cart me-2"></i>Monthly Orders</h5>
-                <canvas id="orderChart" height="200"></canvas>
+        <!-- Low Stock Products List -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Low Stock Products</h5>
+                <div class="product-list">
+                    @if (Model.LowStockProducts.Any())
+                    {
+                        @foreach (var product in Model.LowStockProducts)
+                        {
+                            <div class="product-card">
+                                <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.jpg" : product.ImageUrl)"
+                                    class="product-img">
+                                <div class="p-3 flex-grow-1">
+                                    <h6 class="mb-1">@product.ProductName</h6>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">@String.Format("{0:n0}", product.Price) VNĐ</span>
+                                        <span class="badge bg-warning text-dark">@product.CurrentStock in stock</span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="/Manager/Products/Edit?id=@product.ProductId"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-plus-circle me-1"></i>Restock
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted p-4">
+                            <i class="fas fa-check-circle me-2"></i>All products are well-stocked
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Out of Stock Products List -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-times-circle me-2 text-danger"></i>Out of Stock Products</h5>
+                <div class="product-list">
+                    @if (Model.OutOfStockProducts.Any())
+                    {
+                        @foreach (var product in Model.OutOfStockProducts)
+                        {
+                            <div class="product-card">
+                                <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.jpg" : product.ImageUrl)"
+                                    class="product-img">
+                                <div class="p-3 flex-grow-1">
+                                    <h6 class="mb-1">@product.ProductName</h6>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">@String.Format("{0:n0}", product.Price) VNĐ</span>
+                                        <span class="badge bg-danger">Out of stock</span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="/Manager/Products/Edit?id=@product.ProductId"
+                                            class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-plus-circle me-1"></i>Restock
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted p-4">
+                            <i class="fas fa-check-circle me-2"></i>No products are out of stock
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -220,35 +428,6 @@
             minimumFractionDigits: 0
         }).format(value);
     }
-
-    // Monthly Orders Chart
-    var orderCtx = document.getElementById('orderChart').getContext('2d');
-    new Chart(orderCtx, {
-        type: 'bar',
-        data: {
-            labels: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.Time))),
-            datasets: [{
-                label: 'Number of Orders',
-                data: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.TotalOrders))),
-                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Monthly Order Statistics'
-                }
-            }
-        }
-    });
 
     // Order Completion Chart
     var orderCompletionCtx = document.getElementById('orderCompletionChart').getContext('2d');
@@ -277,7 +456,7 @@
     new Chart(userCtx, {
         type: 'line',
         data: {
-            labels: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => "Month " + u.Month))),
+            labels: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.Month + "/" + u.Date.Year))),
             datasets: [{
                 label: 'New Users',
                 data: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.TotalUsers))),
@@ -297,43 +476,216 @@
         }
     });
 
-    // Monthly Revenue Chart
-    var revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Period))),
-            datasets: [{
-                label: 'Revenue (VNĐ)',
-                data: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Revenue))),
-                backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                borderColor: 'rgba(255, 205, 86, 1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Monthly Revenue from Completed Orders'
-                }
+    // Store the original chart data
+    let originalChartData = {
+        labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Period))),
+        revenueData: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Revenue))),
+        orderData: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.TotalOrders)))
+    };
+
+    // Handle quarter filtering
+    const quarterButtons = document.querySelectorAll('.quarter-filter');
+    quarterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Update active button
+            quarterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            const quarter = this.getAttribute('data-quarter');
+
+            // Update chart based on quarter
+            let filteredLabels = [];
+            let filteredRevenueData = [];
+            let filteredOrderData = [];
+
+            if (quarter === 'all') {
+                filteredLabels = originalChartData.labels;
+                filteredRevenueData = originalChartData.revenueData;
+                filteredOrderData = originalChartData.orderData;
+            } else {
+                // Filter by quarter
+                originalChartData.labels.forEach((label, index) => {
+                    const month = parseInt(label.split('/')[0]);
+
+                    let include = false;
+                    if (quarter === 'q1' && month >= 1 && month <= 3) include = true;
+                    if (quarter === 'q2' && month >= 4 && month <= 6) include = true;
+                    if (quarter === 'q3' && month >= 7 && month <= 9) include = true;
+                    if (quarter === 'q4' && month >= 10 && month <= 12) include = true;
+
+                    if (include) {
+                        filteredLabels.push(label);
+                        filteredRevenueData.push(originalChartData.revenueData[index]);
+                        filteredOrderData.push(originalChartData.orderData[index]);
+                    }
+                });
+            }
+
+            // Update chart with filtered data
+            combinedChart.data.labels = filteredLabels;
+            combinedChart.data.datasets[0].data = filteredRevenueData;
+            combinedChart.data.datasets[1].data = filteredOrderData;
+            combinedChart.update();
+        });
+    });
+
+    // Store chart reference to update it later
+    let combinedChart;
+
+    // Update combined chart initialization to store the reference
+    document.addEventListener('DOMContentLoaded', function () {
+        var combinedCtx = document.getElementById('combinedChart').getContext('2d');
+        combinedChart = new Chart(combinedCtx, {
+            type: 'line',
+            data: {
+                labels: originalChartData.labels,
+                datasets: [
+                    {
+                        label: 'Revenue (VNĐ)',
+                        data: originalChartData.revenueData,
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgba(255, 205, 86, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Orders',
+                        data: originalChartData.orderData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function (value) {
-                            return formatVND(value);
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Revenue & Order Trends'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.dataset.yAxisID === 'y') {
+                                    label += formatVND(context.raw);
+                                } else {
+                                    label += context.raw + ' orders';
+                                }
+                                return label;
+                            }
                         }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Revenue'
+                        },
+                        ticks: {
+                            callback: function (value) {
+                                return formatVND(value);
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Orders'
+                        },
+                        grid: {
+                            drawOnChartArea: false, // only draw grid for revenue y-axis
+                        },
                     }
                 }
             }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get elements
+        const radioButtons = document.querySelectorAll('input[name="TimePeriod"]');
+        const customDateFields = document.getElementById('customDateFields');
+        const yearSelector = document.getElementById('yearSelector');
+        const yearRadios = document.querySelectorAll('input[name="Year"]');
+        const filterForm = document.getElementById('filterForm');
+
+        // Show/hide appropriate elements based on filter selection
+        radioButtons.forEach(button => {
+            button.addEventListener('change', function () {
+                if (this.value === 'custom') {
+                    customDateFields.classList.remove('d-none');
+                    yearSelector.classList.add('d-none');
+                } else if (this.value === '12months') {
+                    customDateFields.classList.add('d-none');
+                    yearSelector.classList.add('d-none');
+                    filterForm.submit();
+                } else if (this.value === 'year') {
+                    customDateFields.classList.add('d-none');
+                    yearSelector.classList.remove('d-none');
+                }
+            });
+        });
+
+        // Submit form when year is selected
+        yearRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                filterForm.submit();
+            });
+        });
+    });
+
+    // Additional checks for empty data
+    document.addEventListener('DOMContentLoaded', function () {
+        const noDataMessage = "No data available for the selected time period.";
+
+        // Check if monthlyRevenue has data for combined chart
+        if (@Html.Raw(Json.Serialize(Model.MonthlyRevenue.Count)) === 0) {
+            document.getElementById('combinedChart').parentNode.innerHTML =
+                '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+        }
+
+        // Check if orderCompletion has data
+        if (@Model.OrderCompletionRate.CompletedOrders === 0 && @Model.OrderCompletionRate.CanceledOrders === 0) {
+            document.getElementById('orderCompletionChart').parentNode.innerHTML =
+                '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+        }
+
+        // Check if userStatistics has data
+        if (@Html.Raw(Json.Serialize(Model.UserStatistics.Count)) === 0) {
+            document.getElementById('userChart').parentNode.innerHTML =
+                '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+        }
+
+        // Check if topSellingProducts has data
+        if (@Html.Raw(Json.Serialize(Model.TopSellingProducts.Count)) === 0) {
+            document.querySelector('.top-products-list').innerHTML =
+                '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
         }
     });
 </script>
