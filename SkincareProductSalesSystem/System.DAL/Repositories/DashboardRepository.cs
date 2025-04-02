@@ -15,31 +15,6 @@ namespace System.DAL.Repositories
             _context = context;
         }
 
-        // 1️⃣ Thống kê số đơn hàng theo tháng
-        public async Task<List<OrderStatistic>> GetOrderStatistics()
-        {
-            var data = await _context.Orders
-                .Where(o => o.CreatedAt.HasValue)
-                .GroupBy(o => new { o.CreatedAt.Value.Year, o.CreatedAt.Value.Month })
-                .Select(g => new
-                {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
-                    TotalOrders = g.Count()
-                })
-                .OrderBy(g => g.Year)
-                .ThenBy(g => g.Month)
-                .ToListAsync(); // ✅ Lấy dữ liệu từ DB trước
-
-            return data
-                .Select(g => new OrderStatistic
-                {
-                    Time = $"{g.Month}/{g.Year}", // ✅ Xử lý string sau khi tải dữ liệu
-                    TotalOrders = g.TotalOrders
-                })
-                .ToList(); // ✅ Dùng ToList() vì lúc này đang xử lý trên List<T>
-        }
-
         public async Task<List<OrderStatistic>> GetOrderStatisticsByDateRange(DateTime startDate, DateTime endDate)
         {
             var data = await _context.Orders
@@ -65,19 +40,32 @@ namespace System.DAL.Repositories
                 .ToList();
         }
 
-        // 2️⃣ Tính tỷ lệ đơn hàng hoàn thành vs hủy
-        public async Task<OrderCompletionRate> GetOrderCompletionRate()
+        // Get daily order statistics for smaller date ranges
+        public async Task<List<OrderStatistic>> GetDailyOrderStatisticsByDateRange(DateTime startDate, DateTime endDate)
         {
-            // Updated to include both completed status types
-            var completed = await _context.Orders.CountAsync(o =>
-                o.Status == "Completed-Feedback" || o.Status == "Completed-NonFeedback");
-            var canceled = await _context.Orders.CountAsync(o => o.Status == "Canceled");
+            var data = await _context.Orders
+                .Where(o => o.CreatedAt.HasValue && o.CreatedAt.Value >= startDate && o.CreatedAt.Value <= endDate)
+                .GroupBy(o => new { o.CreatedAt.Value.Year, o.CreatedAt.Value.Month, o.CreatedAt.Value.Day })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Day = g.Key.Day,
+                    TotalOrders = g.Count()
+                })
+                .OrderBy(g => g.Year)
+                .ThenBy(g => g.Month)
+                .ThenBy(g => g.Day)
+                .ToListAsync();
 
-            return new OrderCompletionRate
-            {
-                CompletedOrders = completed,
-                CanceledOrders = canceled
-            };
+            return data
+                .Select(g => new OrderStatistic
+                {
+                    Time = $"{g.Day}/{g.Month}/{g.Year}",
+                    TotalOrders = g.TotalOrders,
+                    Date = new DateTime(g.Year, g.Month, g.Day)
+                })
+                .ToList();
         }
 
         public async Task<OrderCompletionRate> GetOrderCompletionRateByDateRange(DateTime startDate, DateTime endDate)
@@ -97,37 +85,7 @@ namespace System.DAL.Repositories
             };
         }
 
-        // 3️⃣ Lấy sản phẩm bán chạy nhất
-        public async Task<List<BestSellingProduct>> GetBestSellingProducts(int top = 5)
-        {
-            return await _context.OrderItems
-                .Where(oi => oi.Product != null)
-                .GroupBy(oi => oi.Product.Name)
-                .Select(g => new BestSellingProduct
-                {
-                    ProductName = g.Key,
-                    TotalSold = g.Sum(oi => oi.Quantity)
-                })
-                .OrderByDescending(p => p.TotalSold)
-                .Take(top)
-                .ToListAsync();
-        }
-
-        // 4️⃣ Thống kê số lượng user theo tháng
-        public async Task<List<UserStatistic>> GetUserStatistics()
-        {
-            return await _context.Users
-                .Where(u => u.CreatedAt.HasValue)
-                .GroupBy(u => new { u.CreatedAt.Value.Year, u.CreatedAt.Value.Month })
-                .Select(g => new UserStatistic
-                {
-                    Month = g.Key.Month,
-                    TotalUsers = g.Count()
-                })
-                .OrderBy(u => u.Month)
-                .ToListAsync();
-        }
-
+        // Lấy số lượng user theo tháng trong khoảng thời gian
         public async Task<List<UserStatistic>> GetUserStatisticsByDateRange(DateTime startDate, DateTime endDate)
         {
             var data = await _context.Users
@@ -153,13 +111,42 @@ namespace System.DAL.Repositories
                 .ToList();
         }
 
-        // 5️⃣ Lấy tổng số user
+        // Get daily user statistics for smaller date ranges
+        public async Task<List<UserStatistic>> GetDailyUserStatisticsByDateRange(DateTime startDate, DateTime endDate)
+        {
+            var data = await _context.Users
+                .Where(u => u.CreatedAt.HasValue && u.CreatedAt.Value >= startDate && u.CreatedAt.Value <= endDate)
+                .GroupBy(u => new { u.CreatedAt.Value.Year, u.CreatedAt.Value.Month, u.CreatedAt.Value.Day })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Day = g.Key.Day,
+                    TotalUsers = g.Count()
+                })
+                .OrderBy(g => g.Year)
+                .ThenBy(g => g.Month)
+                .ThenBy(g => g.Day)
+                .ToListAsync();
+
+            return data
+                .Select(g => new UserStatistic
+                {
+                    Month = g.Month,
+                    Day = g.Day,
+                    TotalUsers = g.TotalUsers,
+                    Date = new DateTime(g.Year, g.Month, g.Day)
+                })
+                .ToList();
+        }
+
+        // Lấy tổng số user
         public async Task<int> GetTotalUsers()
         {
             return await _context.Users.CountAsync();
         }
 
-        // 6️⃣ Lấy tổng doanh thu từ các đơn hàng đã hoàn thành
+        // Lấy tổng doanh thu từ các đơn hàng đã hoàn thành
         public async Task<decimal> GetTotalRevenue()
         {
             // Updated to include both completed status types
@@ -176,29 +163,7 @@ namespace System.DAL.Repositories
                 .SumAsync(o => o.TotalPrice);
         }
 
-        // 7️⃣ Lấy chi tiết sản phẩm bán chạy nhất
-        public async Task<List<TopSellingProductDetail>> GetTopSellingProducts(int count = 5)
-        {
-            return await _context.OrderItems
-                // Updated to include both completed status types
-                .Where(oi => (oi.Order.Status == "Completed-Feedback" ||
-                             oi.Order.Status == "Completed-NonFeedback") &&
-                             oi.Product != null)
-                .GroupBy(oi => new { oi.ProductId, oi.Product.Name, oi.Product.ImageUrl, oi.Product.Price })
-                .Select(g => new TopSellingProductDetail
-                {
-                    ProductId = g.Key.ProductId.Value,
-                    ProductName = g.Key.Name,
-                    ImageUrl = g.Key.ImageUrl,
-                    Price = g.Key.Price,
-                    TotalQuantity = g.Sum(oi => oi.Quantity),
-                    TotalRevenue = g.Sum(oi => oi.Quantity * oi.UnitPrice)
-                })
-                .OrderByDescending(p => p.TotalQuantity)
-                .Take(count)
-                .ToListAsync();
-        }
-
+        // Top sản phẩm bán chạy
         public async Task<List<TopSellingProductDetail>> GetTopSellingProductsByDateRange(DateTime startDate, DateTime endDate, int count = 5)
         {
             return await _context.OrderItems
@@ -224,33 +189,7 @@ namespace System.DAL.Repositories
                 .ToListAsync();
         }
 
-        // 8️⃣ Lấy doanh thu theo tháng
-        public async Task<List<RevenueByMonth>> GetMonthlyRevenue()
-        {
-            var data = await _context.Orders
-                // Updated to include both completed status types
-                .Where(o => (o.Status == "Completed-Feedback" || o.Status == "Completed-NonFeedback") &&
-                       o.CreatedAt.HasValue)
-                .GroupBy(o => new { o.CreatedAt.Value.Year, o.CreatedAt.Value.Month })
-                .Select(g => new
-                {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
-                    TotalRevenue = g.Sum(o => o.TotalPrice)
-                })
-                .OrderBy(g => g.Year)
-                .ThenBy(g => g.Month)
-                .ToListAsync();
-
-            return data
-                .Select(g => new RevenueByMonth
-                {
-                    Period = $"{g.Month}/{g.Year}",
-                    Revenue = g.TotalRevenue
-                })
-                .ToList();
-        }
-
+        // Lấy doanh thu theo tháng
         public async Task<List<RevenueByMonth>> GetMonthlyRevenueByDateRange(DateTime startDate, DateTime endDate)
         {
             var data = await _context.Orders
@@ -273,6 +212,35 @@ namespace System.DAL.Repositories
                     Period = $"{g.Month}/{g.Year}",
                     Revenue = g.TotalRevenue,
                     Date = new DateTime(g.Year, g.Month, 1)
+                })
+                .ToList();
+        }
+
+        // Get daily revenue for smaller date ranges
+        public async Task<List<RevenueByDay>> GetDailyRevenueByDateRange(DateTime startDate, DateTime endDate)
+        {
+            var data = await _context.Orders
+                .Where(o => (o.Status == "Completed-Feedback" || o.Status == "Completed-NonFeedback") &&
+                       o.CreatedAt.HasValue && o.CreatedAt.Value >= startDate && o.CreatedAt.Value <= endDate)
+                .GroupBy(o => new { o.CreatedAt.Value.Year, o.CreatedAt.Value.Month, o.CreatedAt.Value.Day })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Day = g.Key.Day,
+                    TotalRevenue = g.Sum(o => o.TotalPrice)
+                })
+                .OrderBy(g => g.Year)
+                .ThenBy(g => g.Month)
+                .ThenBy(g => g.Day)
+                .ToListAsync();
+
+            return data
+                .Select(g => new RevenueByDay
+                {
+                    Period = $"{g.Day}/{g.Month}/{g.Year}",
+                    Revenue = g.TotalRevenue,
+                    Date = new DateTime(g.Year, g.Month, g.Day)
                 })
                 .ToList();
         }
@@ -330,66 +298,6 @@ namespace System.DAL.Repositories
                 .Take(count)
                 .ToListAsync();
         }
-
-        public async Task<List<DailyRevenue>> GetDailyRevenueForRange(DateTime startDate, DateTime endDate)
-        {
-            // Create a continuous list of dates between start and end
-            var allDates = Enumerable.Range(0, (endDate - startDate).Days + 1)
-                .Select(d => startDate.AddDays(d))
-                .ToList();
-
-            // Get revenue data by day
-            var revenueData = await _context.Orders
-                .Where(o => (o.Status == "Completed-Feedback" || o.Status == "Completed-NonFeedback") &&
-                       o.CreatedAt.HasValue && o.CreatedAt.Value.Date >= startDate.Date &&
-                       o.CreatedAt.Value.Date <= endDate.Date)
-                .GroupBy(o => o.CreatedAt.Value.Date)
-                .Select(g => new DailyRevenue
-                {
-                    Date = g.Key,
-                    Revenue = g.Sum(o => o.TotalPrice)
-                })
-                .ToListAsync();
-
-            // Ensure all dates have entries (with 0 for days without data)
-            var result = allDates.Select(date => new DailyRevenue
-            {
-                Date = date,
-                Revenue = revenueData.FirstOrDefault(r => r.Date.Date == date.Date)?.Revenue ?? 0
-            }).ToList();
-
-            return result;
-        }
-
-        public async Task<List<DailyOrder>> GetDailyOrdersForRange(DateTime startDate, DateTime endDate)
-        {
-            // Create a continuous list of dates between start and end
-            var allDates = Enumerable.Range(0, (endDate - startDate).Days + 1)
-                .Select(d => startDate.AddDays(d))
-                .ToList();
-
-            // Get order data by day
-            var orderData = await _context.Orders
-                .Where(o => o.CreatedAt.HasValue &&
-                           o.CreatedAt.Value.Date >= startDate.Date &&
-                           o.CreatedAt.Value.Date <= endDate.Date)
-                .GroupBy(o => o.CreatedAt.Value.Date)
-                .Select(g => new DailyOrder
-                {
-                    Date = g.Key,
-                    TotalOrders = g.Count()
-                })
-                .ToListAsync();
-
-            // Ensure all dates have entries (with 0 for days without data)
-            var result = allDates.Select(date => new DailyOrder
-            {
-                Date = date,
-                TotalOrders = orderData.FirstOrDefault(r => r.Date.Date == date.Date)?.TotalOrders ?? 0
-            }).ToList();
-
-            return result;
-        }
     }
 
     // Model trả về dữ liệu thống kê
@@ -397,18 +305,24 @@ namespace System.DAL.Repositories
     {
         public string Time { get; set; }
         public int TotalOrders { get; set; }
-        public DateTime Date { get; set; } // New property for filtering
+        public DateTime Date { get; set; } // Property for filtering
     }
-    public class OrderCompletionRate { public int CompletedOrders { get; set; } public int CanceledOrders { get; set; } }
-    public class BestSellingProduct { public string ProductName { get; set; } public int TotalSold { get; set; } }
+
+    public class OrderCompletionRate
+    {
+        public int CompletedOrders { get; set; }
+        public int CanceledOrders { get; set; }
+    }
+
     public class UserStatistic
     {
         public int Month { get; set; }
+        public int Day { get; set; }
         public int TotalUsers { get; set; }
-        public DateTime Date { get; set; } // Add this property
+        public DateTime Date { get; set; }
     }
 
-    // Thêm các class mới cho các chức năng mới
+    // Các model cho các chức năng khác
     public class TopSellingProductDetail
     {
         public int ProductId { get; set; }
@@ -423,7 +337,14 @@ namespace System.DAL.Repositories
     {
         public string Period { get; set; }
         public decimal Revenue { get; set; }
-        public DateTime Date { get; set; } // New property for filtering
+        public DateTime Date { get; set; } // Property for filtering
+    }
+
+    public class RevenueByDay
+    {
+        public string Period { get; set; }
+        public decimal Revenue { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public class ProductStockStatus
@@ -433,17 +354,5 @@ namespace System.DAL.Repositories
         public string ImageUrl { get; set; }
         public int CurrentStock { get; set; }
         public decimal Price { get; set; }
-    }
-
-    public class DailyRevenue
-    {
-        public DateTime Date { get; set; }
-        public decimal Revenue { get; set; }
-    }
-
-    public class DailyOrder
-    {
-        public DateTime Date { get; set; }
-        public int TotalOrders { get; set; }
     }
 }

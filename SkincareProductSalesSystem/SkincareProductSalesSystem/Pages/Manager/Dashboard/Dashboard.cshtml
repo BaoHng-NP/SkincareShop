@@ -453,40 +453,91 @@
 
     // User Statistics Chart
     var userCtx = document.getElementById('userChart').getContext('2d');
-    new Chart(userCtx, {
-        type: 'line',
-        data: {
-            labels: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.Month + "/" + u.Date.Year))),
-            datasets: [{
-                label: 'New Users',
+    @if (Model.ShowDailyData)
+    {
+            <text>
+        // Daily User Data
+                new Chart(userCtx, {
+                    type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.DailyUserStatistics.Select(u => u.Day + "/" + u.Month + "/" + u.Date.Year))),
+                datasets: [{
+                    label: 'New Users',
+                data: @Html.Raw(Json.Serialize(Model.DailyUserStatistics.Select(u => u.TotalUsers))),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                tension: 0.4
+                }]
+            },
+                options: {
+                    responsive: true,
+                plugins: {
+                    legend: {
+                    position: 'top',
+                    }
+                }
+            }
+        });
+            </text>
+    }
+    else
+    {
+            <text>
+        // Monthly User Data
+                new Chart(userCtx, {
+                    type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.Month + "/" + u.Date.Year))),
+                datasets: [{
+                    label: 'New Users',
                 data: @Html.Raw(Json.Serialize(Model.UserStatistics.Select(u => u.TotalUsers))),
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
                 tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
+                }]
+            },
+                options: {
+                    responsive: true,
+                plugins: {
+                    legend: {
                     position: 'top',
+                    }
                 }
             }
-        }
-    });
+        });
+            </text>
+    }
 
-    // Store the original chart data
-    let originalChartData = {
-        labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Period))),
-        revenueData: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Revenue))),
-        orderData: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.TotalOrders)))
+        // Store the original chart data for monthly view
+        let originalChartData = {
+            labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Period))),
+            revenueData: @Html.Raw(Json.Serialize(Model.MonthlyRevenue.Select(r => r.Revenue))),
+            orderData: @Html.Raw(Json.Serialize(Model.OrderStatistics.Select(o => o.TotalOrders)))
     };
+
+    // Store the daily data if available
+    @if (Model.ShowDailyData)
+    {
+            <text>
+                let dailyChartData = {
+                    labels: @Html.Raw(Json.Serialize(Model.DailyRevenue.Select(r => r.Period))),
+                revenueData: @Html.Raw(Json.Serialize(Model.DailyRevenue.Select(r => r.Revenue))),
+                orderData: @Html.Raw(Json.Serialize(Model.DailyOrderStatistics.Select(o => o.TotalOrders)))
+        };
+            </text>
+    }
 
     // Handle quarter filtering
     const quarterButtons = document.querySelectorAll('.quarter-filter');
     quarterButtons.forEach(button => {
         button.addEventListener('click', function () {
+            // Only apply quarter filtering for monthly data
+            if (@(Model.ShowDailyData ? "true" : "false")) {
+                return; // Don't filter daily data by quarter
+            }
+
             // Update active button
             quarterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
@@ -531,101 +582,202 @@
 
     // Store chart reference to update it later
     let combinedChart;
+    let dailyChart;
 
-    // Update combined chart initialization to store the reference
-    document.addEventListener('DOMContentLoaded', function () {
-        var combinedCtx = document.getElementById('combinedChart').getContext('2d');
-        combinedChart = new Chart(combinedCtx, {
-            type: 'line',
-            data: {
-                labels: originalChartData.labels,
+    // Initialize Daily Chart if needed
+    @if (Model.ShowDailyData)
+    {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+            var dailyCtx = document.getElementById('dailyChart').getContext('2d');
+                dailyChart = new Chart(dailyCtx, {
+                    type: 'line',
+                data: {
+                    labels: dailyChartData.labels,
                 datasets: [
-                    {
-                        label: 'Revenue (VNĐ)',
-                        data: originalChartData.revenueData,
-                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                        borderColor: 'rgba(255, 205, 86, 1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Orders',
-                        data: originalChartData.orderData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.4,
-                        yAxisID: 'y1'
-                    }
+                {
+                    label: 'Revenue (VNĐ)',
+                data: dailyChartData.revenueData,
+                backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                yAxisID: 'y'
+                        },
+                {
+                    label: 'Orders',
+                data: dailyChartData.orderData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y1'
+                        }
                 ]
-            },
-            options: {
-                responsive: true,
+                },
+                options: {
+                    responsive: true,
                 interaction: {
                     mode: 'index',
-                    intersect: false,
-                },
+                intersect: false,
+                    },
                 plugins: {
                     legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Revenue & Order Trends'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
+                    position: 'top',
+                        },
+                title: {
+                    display: true,
+                text: 'Daily Revenue & Order Trends'
+                        },
+                tooltip: {
+                    callbacks: {
+                    label: function (context) {
+                    let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                                    }
+                if (context.dataset.yAxisID === 'y') {
+                    label += formatVND(context.raw);
+                                    } else {
+                    label += context.raw + ' orders';
+                                    }
+                return label;
                                 }
-                                if (context.dataset.yAxisID === 'y') {
-                                    label += formatVND(context.raw);
-                                } else {
-                                    label += context.raw + ' orders';
-                                }
-                                return label;
                             }
                         }
-                    }
-                },
+                    },
                 scales: {
                     y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        beginAtZero: true,
+                    type: 'linear',
+                display: true,
+                position: 'left',
+                beginAtZero: true,
+                title: {
+                    display: true,
+                text: 'Revenue'
+                            },
+                ticks: {
+                    callback: function (value) {
+                                    return formatVND(value);
+                                }
+                            }
+                        },
+                y1: {
+                    type: 'linear',
+                display: true,
+                position: 'right',
+                beginAtZero: true,
+                title: {
+                    display: true,
+                text: 'Orders'
+                            },
+                grid: {
+                    drawOnChartArea: false, // only draw grid for revenue y-axis
+                            },
+                        }
+                    }
+                }
+            });
+        });
+            </text>
+    }
+
+        // Update combined chart initialization to store the reference
+        document.addEventListener('DOMContentLoaded', function () {
+            var combinedCtx = document.getElementById('combinedChart').getContext('2d');
+            combinedChart = new Chart(combinedCtx, {
+                type: 'line',
+                data: {
+                    labels: originalChartData.labels,
+                    datasets: [
+                        {
+                            label: 'Revenue (VNĐ)',
+                            data: originalChartData.revenueData,
+                            backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                            borderColor: 'rgba(255, 205, 86, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Orders',
+                            data: originalChartData.orderData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
                         title: {
                             display: true,
-                            text: 'Revenue'
+                            text: 'Revenue & Order Trends'
                         },
-                        ticks: {
-                            callback: function (value) {
-                                return formatVND(value);
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.yAxisID === 'y') {
+                                        label += formatVND(context.raw);
+                                    } else {
+                                        label += context.raw + ' orders';
+                                    }
+                                    return label;
+                                }
                             }
                         }
                     },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        beginAtZero: true,
-                        title: {
+                    scales: {
+                        y: {
+                            type: 'linear',
                             display: true,
-                            text: 'Orders'
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return formatVND(value);
+                                }
+                            }
                         },
-                        grid: {
-                            drawOnChartArea: false, // only draw grid for revenue y-axis
-                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Orders'
+                            },
+                            grid: {
+                                drawOnChartArea: false, // only draw grid for revenue y-axis
+                            },
+                        }
                     }
                 }
-            }
+            });
         });
-    });
 
     document.addEventListener('DOMContentLoaded', function () {
         // Get elements
@@ -664,10 +816,26 @@
     document.addEventListener('DOMContentLoaded', function () {
         const noDataMessage = "No data available for the selected time period.";
 
-        // Check if monthlyRevenue has data for combined chart
-        if (@Html.Raw(Json.Serialize(Model.MonthlyRevenue.Count)) === 0) {
-            document.getElementById('combinedChart').parentNode.innerHTML =
-                '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+        // Check if data has values for charts
+        @if (Model.ShowDailyData)
+        {
+                <text>
+            // Check if dailyRevenue has data
+                    if (@Html.Raw(Json.Serialize(Model.DailyRevenue.Count)) === 0) {
+                        document.getElementById('dailyChart').parentNode.innerHTML =
+                        '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+            }
+                </text>
+        }
+        else
+        {
+                <text>
+            // Check if monthlyRevenue has data for combined chart
+                    if (@Html.Raw(Json.Serialize(Model.MonthlyRevenue.Count)) === 0) {
+                        document.getElementById('combinedChart').parentNode.innerHTML =
+                        '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
+            }
+                </text>
         }
 
         // Check if orderCompletion has data
@@ -677,7 +845,9 @@
         }
 
         // Check if userStatistics has data
-        if (@Html.Raw(Json.Serialize(Model.UserStatistics.Count)) === 0) {
+        if (@(Model.ShowDailyData ?
+                        Html.Raw(Json.Serialize(Model.DailyUserStatistics.Count)) :
+                        Html.Raw(Json.Serialize(Model.UserStatistics.Count))) === 0) {
             document.getElementById('userChart').parentNode.innerHTML =
                 '<div class="text-center text-muted p-5">' + noDataMessage + '</div>';
         }
@@ -689,3 +859,6 @@
         }
     });
 </script>
+
+
+

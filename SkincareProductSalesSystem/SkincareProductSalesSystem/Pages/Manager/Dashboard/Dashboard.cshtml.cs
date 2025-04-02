@@ -20,7 +20,6 @@ namespace SkincareProductSalesSystem.Pages.Manager.Dashboard
 
         public List<OrderStatistic> OrderStatistics { get; set; }
         public OrderCompletionRate OrderCompletionRate { get; set; }
-        public List<BestSellingProduct> BestSellingProducts { get; set; }
         public List<UserStatistic> UserStatistics { get; set; }
 
         public int TotalUsers { get; set; }
@@ -29,6 +28,12 @@ namespace SkincareProductSalesSystem.Pages.Manager.Dashboard
         public List<RevenueByMonth> MonthlyRevenue { get; set; }
         public List<ProductStockStatus> LowStockProducts { get; set; }
         public List<ProductStockStatus> OutOfStockProducts { get; set; }
+
+        // Daily data for smaller date ranges
+        public List<OrderStatistic> DailyOrderStatistics { get; set; }
+        public List<RevenueByDay> DailyRevenue { get; set; }
+        public List<UserStatistic> DailyUserStatistics { get; set; }
+        public bool ShowDailyData { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string TimePeriod { get; set; } = "12months";
@@ -83,14 +88,36 @@ namespace SkincareProductSalesSystem.Pages.Manager.Dashboard
                 StartDate = startDate;
                 EndDate = endDate;
 
+                // Determine if we should show daily data (for date ranges less than a month)
+                ShowDailyData = _dashboardService.ShouldUseDailyData(startDate, endDate);
+                ViewData["ShowDailyData"] = ShowDailyData ? true : (object)null;
+
                 // Get filtered data
-                OrderStatistics = await _dashboardService.GetOrderStatisticsByDateRange(startDate, endDate);
+                if (ShowDailyData)
+                {
+                    // Get daily data for smaller date ranges
+                    DailyOrderStatistics = await _dashboardService.GetDailyOrderStatisticsByDateRange(startDate, endDate);
+                    DailyRevenue = await _dashboardService.GetDailyRevenueByDateRange(startDate, endDate);
+                    DailyUserStatistics = await _dashboardService.GetDailyUserStatisticsByDateRange(startDate, endDate);
+
+                    // Still load monthly data for the UI components that don't have daily equivalents
+                    OrderStatistics = await _dashboardService.GetOrderStatisticsByDateRange(startDate, endDate);
+                    MonthlyRevenue = await _dashboardService.GetMonthlyRevenueByDateRange(startDate, endDate);
+                    UserStatistics = await _dashboardService.GetUserStatisticsByDateRange(startDate, endDate);
+                }
+                else
+                {
+                    // Get monthly data for larger date ranges
+                    OrderStatistics = await _dashboardService.GetOrderStatisticsByDateRange(startDate, endDate);
+                    MonthlyRevenue = await _dashboardService.GetMonthlyRevenueByDateRange(startDate, endDate);
+                    UserStatistics = await _dashboardService.GetUserStatisticsByDateRange(startDate, endDate);
+                }
+
+                // Get data that's not affected by monthly/daily switch
                 OrderCompletionRate = await _dashboardService.GetOrderCompletionRateByDateRange(startDate, endDate);
-                UserStatistics = await _dashboardService.GetUserStatisticsByDateRange(startDate, endDate);
                 TotalUsers = await _dashboardService.GetTotalUsers();
                 TotalRevenue = await _dashboardService.GetTotalRevenueByDateRange(startDate, endDate);
                 TopSellingProducts = await _dashboardService.GetTopSellingProductsByDateRange(startDate, endDate, 5);
-                MonthlyRevenue = await _dashboardService.GetMonthlyRevenueByDateRange(startDate, endDate);
                 LowStockProducts = await _dashboardService.GetLowStockProducts(10, 5);
                 OutOfStockProducts = await _dashboardService.GetOutOfStockProducts(5);
             }
