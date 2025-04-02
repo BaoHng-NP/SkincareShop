@@ -11,6 +11,7 @@ using System.BLL.Services;
 using System.Security.Claims;
 using FUNewsManagementSystem.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Orders
 {
@@ -32,10 +33,25 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
         }
 
         public IEnumerable<Order> Order { get; set; } = default!;
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int pageNumber = 1)
         {
-            Order = await _orderService.GetAllOrdersAsync();
+            int pageSize = 9;
+            var orders = await _orderService.GetAllOrdersAsync();
+            if (orders == null || !orders.Any())
+            {
+                ViewData["NoProductsMessage"] = "No Orders available.";
+                Order = new List<Order>(); 
+            }
+            else
+            {
+                int totalProducts = orders.Count();
+                TotalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+                CurrentPage = pageNumber;
+                Order = orders.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            }
         }
         public async Task<IActionResult> OnPostConfirmAsync(int id)
         {
@@ -61,16 +77,8 @@ namespace SkincareProductSalesSystem.Pages.Staff.Orders
             }
             else if (order.Status == "Shipping")
             {
-                if (order.UserId.HasValue) 
-                {
-                    var acc = await _accountService.GetAccountByIdAsync(order.UserId.Value);
-                    if (acc != null)
-                    {
-                        order.Status = "Completed-NonFeedback";
-                        acc.LoyaltyPoints += (int)(Math.Floor(order.TotalPrice / 10000));
-                        await _accountService.UpdateAccountAsync(acc);
-                    }
-                }
+                order.Status = "Delivered";
+                order.CreatedAt = DateTime.Now;
             }                     
             else
             {

@@ -317,8 +317,11 @@
                         <h5 class="mt-2 text-center">
                             @product.Name
                         </h5>
-                        <p class="text-muted text-center">@product.Description</p>
-                        <div class="d-flex justify-content-center align-items-center gap-2">
+                        <p class="text-muted text-center">
+                            @(product.Description.Length > 30
+                                ? product.Description.Substring(0, 30) + "..."
+                                : product.Description)
+                        </p>                        <div class="d-flex justify-content-center align-items-center gap-2">
                             <span class="text-decoration-line-through text-muted">@((product.Price * 2).ToString("N0")) ₫</span>
                             <span class="product-price">@product.Price.ToString("N0") ₫</span>
                         </div>

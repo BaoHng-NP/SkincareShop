@@ -18,6 +18,7 @@ namespace FUNewsManagementSystem
               option => option.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"])
             );
         }
+     
         public static void AddRepositoryUOW(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();

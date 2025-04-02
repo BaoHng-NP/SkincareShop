@@ -123,7 +123,7 @@ namespace System.BLL.Services
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
-            return await _repository.FindAll(null, o => o.OrderItems, o => o.User).ToListAsync();
+            return await _repository.FindAll(null, o => o.OrderItems, o => o.User).OrderByDescending(o=>o.CreatedAt).ToListAsync();
         }
 
         public async Task<Order?> GetOrderByIdAsync(int id)

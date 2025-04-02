@@ -7,29 +7,27 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
 using System.DAL;
+using System.BLL.Services;
 
 namespace SkincareProductSalesSystem.Pages.Staff.Products
 {
     public class DeleteModel : PageModel
     {
-        private readonly System.DAL.SkincareShopContext _context;
+        private readonly IProductService _productService;
 
-        public DeleteModel(System.DAL.SkincareShopContext context)
+        public DeleteModel(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         [BindProperty]
         public Product Product { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+           
 
-            var product = await _context.Products.FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
@@ -42,19 +40,18 @@ namespace SkincareProductSalesSystem.Pages.Staff.Products
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productService.GetProductByIdAsync(id);
             if (product != null)
             {
                 Product = product;
-                _context.Products.Remove(Product);
-                await _context.SaveChangesAsync();
+             await _productService.DeleteProductAsync(id);
             }
 
             return RedirectToPage("./Index");

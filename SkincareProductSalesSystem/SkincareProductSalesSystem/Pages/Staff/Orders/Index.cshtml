@@ -54,7 +54,6 @@
                     <th class="text-end">Total Price</th>
                     <th>Payment Method</th>
                     <th>Status</th>
-                    <th>Created At</th>
                     <th>Customer</th>
                     <th class="text-center">Actions</th>
                 </tr>
@@ -73,7 +72,6 @@
                             </span>
 
                         </td>
-                        <td>@item.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@item.User.FullName</td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-2">
@@ -91,7 +89,7 @@
                                     <form method="post" asp-page-handler="Confirm" asp-route-id="@item.Id">
                                         <button type="submit" class="btn btn-success btn-sm"
                                                 onclick="return confirm('Are you sure you want to deliver this order?');">
-                                            <i class="bi bi-check-circle"></i> Delivery
+                                            <i class="bi bi-check-circle"></i> Shipping
                                         </button>
                                     </form>
                                 }
@@ -99,8 +97,8 @@
                                 {
                                     <form method="post" asp-page-handler="Confirm" asp-route-id="@item.Id">
                                         <button type="submit" class="btn btn-success btn-sm"
-                                                onclick="return confirm('Are you sure you want to complete this order?');">
-                                            <i class="bi bi-check-circle"></i> Complete
+                                                onclick="return confirm('Are you sure you want to delivered  this order?');">
+                                            <i class="bi bi-check-circle"></i> Delivered
                                         </button>
                                     </form>
                                 }
@@ -139,6 +137,30 @@
                 }
             </tbody>
         </table>
+        <nav>
+            <ul class="pagination">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?pageNumber=@(Model.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="?pageNumber=@i">@i</a>
+                    </li>
+                }
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?pageNumber=@(Model.CurrentPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>
 @if (TempData["SuccessMessage"] != null)
@@ -195,6 +217,7 @@
             "Shipping" => "bg-info",
             "Completed-Feedback" => "bg-success",
             "Completed-NonFeedback" => "bg-success",
+            "Delivered" => "bg-info",
             "Canceled" => "bg-danger",
             _ => "bg-secondary"
         };

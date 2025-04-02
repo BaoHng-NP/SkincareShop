@@ -75,7 +75,7 @@
             @await Html.PartialAsync("_OrderTable", Model.Order.Where(o => o.Status == "Confirmed").ToList())
         </div>
         <div class="tab-pane fade" id="shippingOrders" role="tabpanel">
-            @await Html.PartialAsync("_OrderTable", Model.Order.Where(o => o.Status == "Shipping").ToList())
+            @await Html.PartialAsync("_OrderTable", Model.Order.Where(o => o.Status == "Shipping" || o.Status == "Delivered").ToList())
         </div>
         <div class="tab-pane fade" id="completedOrders" role="tabpanel">
             @await Html.PartialAsync("_OrderTable", Model.Order
@@ -105,3 +105,69 @@
 <script>localStorage.removeItem("selectedVoucherId");</script>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/site.js"></script>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const statusElements = document.querySelectorAll('[id^="status-"]');
+
+            statusElements.forEach(element => {
+                const status = element.getAttribute('data-status');
+                const deliveredDateStr = element.getAttribute('data-delivered-date');
+
+
+                if (status === 'Delivered' && deliveredDateStr) {
+                    const deliveredDate = new Date(deliveredDateStr);
+                    const currentDate = new Date();
+                    const diffDays = (currentDate - deliveredDate) / (1000 * 60 * 60 * 24);
+
+
+                    if (diffDays > 2) {
+                        const orderId = element.id.split('-')[1];
+                        console.log(`Updating order ${orderId}...`);
+                        updateOrderStatus(orderId);
+                    }
+                }
+            });
+
+            function updateOrderStatus(orderId) {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                if (!token) {
+                    console.error("CSRF token missing!");
+                    return;
+                }
+
+                console.log(`Sending request for order ${orderId}...`);
+
+                fetch(`/Customer/OrderHistory?handler=AutoComplete&id=${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    }
+                })
+                .then(response => {
+                    console.log("Response status:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Response data:", data);
+                    if (data.success) {
+                        const statusElement = document.getElementById(`status-${orderId}`);
+                        if (statusElement) {
+                            statusElement.textContent = 'Completed';
+                            statusElement.className = 'badge bg-success';
+                            statusElement.setAttribute('data-status', 'Completed-NonFeedback');
+                        }
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error("Fetch error:", error);
+                });
+            }
+        });
+    </script>
+}
